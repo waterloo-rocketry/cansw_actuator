@@ -210,6 +210,9 @@ void i2c1_write2ByteRegister(uint8_t address, uint8_t reg, uint16_t data);
 */
 void i2c1_writeNBytes(uint8_t address, void * data, uint8_t len);
 
+
+void i2c1_write2Bytes(uint8_t address, uint8_t byte1, uint8_t byte2);
+
  /**
   @Summary
     Read n bytes of data block from a register/address of an I2C slave having 7 bit Address.

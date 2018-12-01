@@ -24,7 +24,7 @@ CLEAN_SUBPROJECTS=${CLEAN_SUBPROJECTS_${SUBPROJECTS}}
 
 
 # Project Name
-PROJECTNAME=vent
+PROJECTNAME=cansw_vent
 
 # Active Configuration
 DEFAULTCONF=default

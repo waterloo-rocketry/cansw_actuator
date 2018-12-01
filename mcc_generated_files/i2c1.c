@@ -205,7 +205,16 @@ void i2c1_writeNBytes(uint8_t address, void* data, uint8_t len)
     }
     wait4Stop();
 }
-
+void i2c1_write2Bytes(uint8_t address, uint8_t byte1, uint8_t byte2)
+{
+    I2C1_Initialize();
+    I2C1ADB1= (uint8_t)(address<<1);
+    I2C1CNT=2;
+    I2C1CON0bits.S=1; //Start
+    sendByte(byte1);
+    sendByte(byte2);
+    wait4Stop();
+}
 uint8_t i2c1_read1ByteRegister(uint8_t address, uint8_t reg)
 {
     uint8_t result;

@@ -10,9 +10,9 @@ CND_CONF=default
 CND_DISTDIR=dist
 TMPDIR=build/${CND_CONF}/${IMAGE_TYPE}/tmp-packaging
 TMPDIRNAME=tmp-packaging
-OUTPUT_PATH=dist/${CND_CONF}/${IMAGE_TYPE}/vent.${IMAGE_TYPE}.${OUTPUT_SUFFIX}
-OUTPUT_BASENAME=vent.${IMAGE_TYPE}.${OUTPUT_SUFFIX}
-PACKAGE_TOP_DIR=vent/
+OUTPUT_PATH=dist/${CND_CONF}/${IMAGE_TYPE}/cansw_vent.${IMAGE_TYPE}.${OUTPUT_SUFFIX}
+OUTPUT_BASENAME=cansw_vent.${IMAGE_TYPE}.${OUTPUT_SUFFIX}
+PACKAGE_TOP_DIR=canswvent/
 
 # Functions
 function checkReturnCode
@@ -57,15 +57,15 @@ mkdir -p ${TMPDIR}
 
 # Copy files and create directories and links
 cd "${TOP}"
-makeDirectory ${TMPDIR}/vent/bin
+makeDirectory ${TMPDIR}/canswvent/bin
 copyFileToTmpDir "${OUTPUT_PATH}" "${TMPDIR}/${PACKAGE_TOP_DIR}bin/${OUTPUT_BASENAME}" 0755
 
 
 # Generate tar file
 cd "${TOP}"
-rm -f ${CND_DISTDIR}/${CND_CONF}/package/vent.tar
+rm -f ${CND_DISTDIR}/${CND_CONF}/package/canswvent.tar
 cd ${TMPDIR}
-tar -vcf ../../../../${CND_DISTDIR}/${CND_CONF}/package/vent.tar *
+tar -vcf ../../../../${CND_DISTDIR}/${CND_CONF}/package/canswvent.tar *
 checkReturnCode
 
 # Cleanup
