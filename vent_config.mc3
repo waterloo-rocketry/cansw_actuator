@@ -1,4 +1,4 @@
-<config configVersion="1.1" device="PIC18F26K83" coreVersion="4.45">
+<config configVersion="1.1" device="PIC18F26K83" coreVersion="4.45.8">
    <usedClasses class="java.util.HashMap">
       <entry>
          <string>System Module</string>
@@ -6977,31 +6977,31 @@
    <generatedFileHashHistoryMap class="java.util.HashMap">
       <entry>
          <file>mcc_generated_files/pin_manager.h</file>
-         <hash>4159e71136312cfba89ad3d6ad50ee295f6493895f73fcb28869127596bcf76e</hash>
+         <hash>535396dbc405bcfbbc69595f984c7909dc38ffe3ba2aa459fb9fcb9471c76743</hash>
       </entry>
       <entry>
          <file>mcc_generated_files/i2c1.h</file>
-         <hash>ba60ca16f16bf96ba7e8e711422b2049206a407ce5af59b0f1d62dd5680a1e6d</hash>
+         <hash>879cd63efa2321232c1925f526a9f5c6552a862eebfae9f9d0d7bf037a3f1701</hash>
       </entry>
       <entry>
          <file>mcc_generated_files/mcc.h</file>
-         <hash>5aee2bf63303a8cdb204e2948a3b903935ef723775f90659bae2cbba60925448</hash>
+         <hash>484311ec91c146a0ccb60dddbe768b9deda35b9a60c6f90e9a1dd9d59bad2335</hash>
       </entry>
       <entry>
          <file>mcc_generated_files/device_config.c</file>
-         <hash>7c744ff654495d1bde1a903ed391f6decf27ed922a24e7e770abd67c9781e92c</hash>
+         <hash>27f151f5e3be268d67264c95537fd2c1211d9c2c2b5c0ee9c1ba96cafcb96a19</hash>
       </entry>
       <entry>
          <file>mcc_generated_files/mcc.c</file>
-         <hash>9767cf03bd1bcf3412fe86fcc5dcd18776a8ac3358407d3ef5cb1e39ba18fc47</hash>
+         <hash>718d2c4d3cddb9fd66cff4065618f21751c102d2da5236ef64e3665484ca9f1a</hash>
       </entry>
       <entry>
          <file>mcc_generated_files/pin_manager.c</file>
-         <hash>529fca9820f28edb8ff5fd0ba826bd7930b9265efb29619343ca906dd98eef30</hash>
+         <hash>7601a65c16bfa04118cb3e26b7eb800b4fa15b9ba2a2b759daa5787f230163bd</hash>
       </entry>
       <entry>
          <file>mcc_generated_files/i2c1.c</file>
-         <hash>143a354142e4f31dca3fca63a58ad68c7baa911324bb7e07c5a94dce04bdc66b</hash>
+         <hash>e989f1cd9be27ad3b38e97b4772f312c8b47522895812952edfedfc151de2127</hash>
       </entry>
    </generatedFileHashHistoryMap>
 </config>
