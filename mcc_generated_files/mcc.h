@@ -52,6 +52,7 @@
 #include <stdbool.h>
 #include "adcc.h"
 #include "fvr.h"
+#include "tmr0.h"
 #include "i2c1.h"
 
 #define _XTAL_FREQ  1000000
