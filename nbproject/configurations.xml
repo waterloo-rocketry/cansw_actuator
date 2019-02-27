@@ -12,6 +12,7 @@
         <itemPath>mcc_generated_files/i2c1.h</itemPath>
       </logicalFolder>
       <itemPath>config.h</itemPath>
+      <itemPath>timer.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -29,6 +30,9 @@
         <itemPath>mcc_generated_files/i2c1.c</itemPath>
       </logicalFolder>
       <itemPath>main.c</itemPath>
+      <itemPath>timer.c</itemPath>
+      <itemPath>canlib/can_common.c</itemPath>
+      <itemPath>canlib/pic18f26k83/pic18f26k83_can.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
@@ -79,7 +83,7 @@
       </makeCustomizationType>
       <HI-TECH-COMP>
         <property key="asmlist" value="true"/>
-        <property key="define-macros" value=""/>
+        <property key="define-macros" value="BOARD_UNIQUE_ID=BOARD_ID_VENT"/>
         <property key="disable-optimizations" value="false"/>
         <property key="extra-include-directories" value=""/>
         <property key="favor-optimization-for" value="-speed,+space"/>
