@@ -3,9 +3,8 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/zx100/Documents/cansw_vent/mcc_generated_files/pin_manager.c</file>
-            <file>file:/C:/Users/zx100/Documents/cansw_vent/mcc_generated_files/adcc.c</file>
-            <file>file:/C:/Users/zx100/Documents/cansw_vent/LINAC.c</file>
+            <file>file:/C:/Users/zx100/Documents/cansw_vent/lin_actuator.h</file>
+            <file>file:/C:/Users/zx100/Documents/cansw_vent/lin_actuator.c</file>
             <file>file:/C:/Users/zx100/Documents/cansw_vent/main.c</file>
         </group>
     </open-files>

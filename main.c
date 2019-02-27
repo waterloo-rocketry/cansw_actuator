@@ -1,4 +1,4 @@
-#ihnclude <stdio.h>
+#include <stdio.h>
 #include <stdlib.h>
 
 // MCC Generated I2C Driver
@@ -7,7 +7,7 @@
 
 #include <xc.h>
 
-#include "LINAC.h"
+#include "lin_actuator.h"
 
 #define _XTAL_FREQ 1000000
 
@@ -19,13 +19,15 @@
 #define BLUE_LED_OFF (LATC7 = 1)
 #define HIGH_DAC_ADDRESS 0x4d
 #define LOW_DAC_ADDRESS 0x4c
-#define HIGH_DAC_VAL 7
+#define HIGH_DAC_VAL 51 //from 0-255, multiply  desired voltage by 51
 #define LOW_DAC_VAL 5
-
-int BatV = 0;
+// global variables for debuging
+int battery_voltage = 0;
 int LINAC_POT = 0;
+int current_draw = 0;
+lin_actuator_states vent_state = nominal;
 
-void LED_init() {
+static void LED_init() {
     TRISC5 = 0;     //set C5 as output
     LATC5 = 1;      // turn the led off
     
@@ -36,13 +38,6 @@ void LED_init() {
     LATC7 = 1;      // turn the led off
 }
 
-
-/* REMOVE AFTER TESTING
-void analog_value_to_data(uint8_t value, uint8_t data_buf[2]){
-   data_buf[0] = ((value & 0xf0) >> 4); // shift the 4 MSB to the 4 LSB
-   data_buf[1] = ((value & 0x0f) << 4); // mask the 4MSB then shift the 4 LSB to the 4MSB
-}
-  */
 void set_DACs(){
   uint8_t data_buf[2]; 
   data_buf[0] = ((HIGH_DAC_VAL & 0xf0) >> 4); // shift the 4 MSB to the 4 LSB
@@ -54,6 +49,14 @@ void set_DACs(){
   if(i2c1_getLastError() == I2C1_FAIL_TIMEOUT){
         RED_LED_ON;
   }
+}
+
+int check_battery_voltage(void){    //returns mV
+    return ADCC_GetSingleConversion(channel_VBAT)*3.95;
+}
+
+int check_current_draw(void){       //returns mA
+    return ADCC_GetSingleConversion(channel_VSENSE)/20; //i =v/r r = 0.2 ohms, v = VSENCE/100
 }
 
 int main(int argc, char** argv) {
@@ -68,16 +71,28 @@ int main(int argc, char** argv) {
     I2C1_Initialize();
     
     LED_init();
-    LINAC_init();
+    lin_actuator_init();
     
     set_DACs();
     
-    //close_vent();
+    close_vent();
     while (1){
-        BatV = ADCC_GetSingleConversion(channel_VBAT);
-        LINAC_POT = ADCC_GetSingleConversion(channel_LINAC_POT);
+        battery_voltage = check_battery_voltage();// returns mV
+        current_draw = check_current_draw();// returns mA
+        LINAC_POT = ADCC_GetSingleConversion(channel_LINAC_POT);// returns mV
         
-        /*if(RB4){
+        vent_state = check_vent_status();
+        /*
+        if (vent_state == closed){
+            __delay_ms(1000);
+            open_vent();
+        }
+        else if(vent_state == open){
+            __delay_ms(1000);
+            close_vent();
+        }
+        */
+        if(RB4){
             WHITE_LED_ON;
         }
         else{
@@ -88,10 +103,7 @@ int main(int argc, char** argv) {
         }
         else{
             BLUE_LED_OFF;
-        }  
-        open_vent();
-        close_vent();
-         */    
+        }    
     }
     
     return (EXIT_SUCCESS);

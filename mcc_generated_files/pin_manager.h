@@ -99,18 +99,6 @@
 #define channel_VSENSE_SetAnalogMode()      do { ANSELAbits.ANSELA1 = 1; } while(0)
 #define channel_VSENSE_SetDigitalMode()     do { ANSELAbits.ANSELA1 = 0; } while(0)
 
-// get/set RA4 procedures
-#define RA4_SetHigh()               do { LATAbits.LATA4 = 1; } while(0)
-#define RA4_SetLow()                do { LATAbits.LATA4 = 0; } while(0)
-#define RA4_Toggle()                do { LATAbits.LATA4 = ~LATAbits.LATA4; } while(0)
-#define RA4_GetValue()              PORTAbits.RA4
-#define RA4_SetDigitalInput()       do { TRISAbits.TRISA4 = 1; } while(0)
-#define RA4_SetDigitalOutput()      do { TRISAbits.TRISA4 = 0; } while(0)
-#define RA4_SetPullup()             do { WPUAbits.WPUA4 = 1; } while(0)
-#define RA4_ResetPullup()           do { WPUAbits.WPUA4 = 0; } while(0)
-#define RA4_SetAnalogMode()         do { ANSELAbits.ANSELA4 = 1; } while(0)
-#define RA4_SetDigitalMode()        do { ANSELAbits.ANSELA4 = 0; } while(0)
-
 // get/set channel_LINAC_POT aliases
 #define channel_LINAC_POT_TRIS                 TRISBbits.TRISB5
 #define channel_LINAC_POT_LAT                  LATBbits.LATB5
