@@ -14,7 +14,7 @@
 
 #include <xc.h>
 
-#define _XTAL_FREQ 1000000
+#define _XTAL_FREQ 12000000
 
 #define RED_LED_ON() (LATC5 = 0)
 #define RED_LED_OFF() (LATC5 = 1)
@@ -65,7 +65,7 @@ int main(int argc, char** argv) {
     
     // set up CAN module
     can_timing_t can_setup;
-    can_setup.brp = 0;
+    can_setup.brp = 11;
     can_setup.sjw = 3;
     can_setup.btlmode = 0x01;
     can_setup.sam = 0;
@@ -81,6 +81,18 @@ int main(int argc, char** argv) {
         __delay_ms(100);
         
         send_status_ok();
+
+        // For debugging purposes, put the valve state on the white LED
+        switch (requested_valve_state) {
+            case VALVE_OPEN:
+                WHITE_LED_ON();
+                break;
+            case VALVE_CLOSED:
+                WHITE_LED_OFF();
+                break;
+            default:
+                break;
+        }
     }
     
     return (EXIT_SUCCESS);

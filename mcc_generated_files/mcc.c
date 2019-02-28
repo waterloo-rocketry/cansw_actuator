@@ -57,16 +57,17 @@ void SYSTEM_Initialize(void)
 
 void OSCILLATOR_Initialize(void)
 {
-    // NOSC HFINTOSC; NDIV 4; 
-    OSCCON1 = 0x62;
-    // CSWHOLD may proceed; SOSCPWR Low power; 
-    OSCCON3 = 0x00;
-    // MFOEN disabled; LFOEN disabled; ADOEN disabled; SOSCEN disabled; EXTOEN disabled; HFOEN disabled; 
-    OSCEN = 0x00;
-    // HFFRQ 4_MHz; 
-    OSCFRQ = 0x02;
-    // TUN 0; 
-    OSCTUNE = 0x00;
+    OSCCON1bits.NDIV = 0x0; //Set oscillator divider to 1:1
+    OSCCON1bits.NOSC = 0x7; //select external oscillator
+
+    //wait until the clock switch has happened
+    while (OSCCON3bits.ORDY == 0)  {}
+
+    //if the currently active clock (CON2) isn't the selected clock (CON1)
+    if (OSCCON2 != 0x70) {
+        //Unhandled error (the oscillator isn't there). Fail fast, with an infinite loop.
+        while (1) {}
+    }
 }
 
 void PMD_Initialize(void)

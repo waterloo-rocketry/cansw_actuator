@@ -47,7 +47,7 @@
 // Configuration bits: selected in the GUI
 
 // CONFIG1L
-#pragma config FEXTOSC = OFF    // External Oscillator Selection->Oscillator not enabled
+#pragma config FEXTOSC = HS     // External Oscillator Selection (HS (crystal oscillator) above 8 MHz; PFM set to high power)
 #pragma config RSTOSC = HFINTOSC_1MHZ    // Reset Oscillator Selection->HFINTOSC with HFFRQ = 4 MHz and CDIV = 4:1
 
 // CONFIG1H
