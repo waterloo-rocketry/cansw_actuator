@@ -5,6 +5,7 @@
 #include "canlib/can_common.h"
 #include "canlib/pic18f26k83/pic18f26k83_can.h"
 #include "canlib/message_types.h"
+#include "canlib/util/timing_util.h"
 
 // MCC Generated I2C Driver
 #include "mcc_generated_files/i2c1.h"
@@ -65,13 +66,7 @@ int main(int argc, char** argv) {
     
     // set up CAN module
     can_timing_t can_setup;
-    can_setup.brp = 11;
-    can_setup.sjw = 3;
-    can_setup.btlmode = 0x01;
-    can_setup.sam = 0;
-    can_setup.seg1ph = 0x04;
-    can_setup.prseg = 0;
-    can_setup.seg2ph = 0x04;
+    can_generate_timing_params(_XTAL_FREQ, &can_setup);
     can_init(&can_setup, can_msg_handler);
     
     while (1){
