@@ -17,10 +17,7 @@
 #define WHITE_LED_OFF (LATC6 = 1)
 #define BLUE_LED_ON (LATC7 = 0)
 #define BLUE_LED_OFF (LATC7 = 1)
-#define HIGH_DAC_ADDRESS 0x4d
-#define LOW_DAC_ADDRESS 0x4c
-#define HIGH_DAC_VAL 51 //from 0-255, multiply  desired voltage by 51
-#define LOW_DAC_VAL 5
+
 // global variables for debuging
 int battery_voltage = 0;
 int LINAC_POT = 0;
@@ -38,21 +35,10 @@ static void LED_init() {
     LATC7 = 1;      // turn the led off
 }
 
-void set_DACs(){
-  uint8_t data_buf[2]; 
-  data_buf[0] = ((HIGH_DAC_VAL & 0xf0) >> 4); // shift the 4 MSB to the 4 LSB
-  data_buf[1] = ((HIGH_DAC_VAL & 0x0f) << 4); // mask the 4MSB then shift the 4 LSB to the 4MSB
-  i2c1_writeNBytes(HIGH_DAC_ADDRESS, data_buf, 2);
-  data_buf[0] = ((LOW_DAC_VAL & 0xf0) >> 4); // shift the 4 MSB to the 4 LSB
-  data_buf[1] = ((LOW_DAC_VAL) << 4); // mask the 4MSB then shift the 4 LSB to the 4MSB
-  i2c1_writeNBytes(LOW_DAC_ADDRESS, data_buf, 2); 
-  if(i2c1_getLastError() == I2C1_FAIL_TIMEOUT){
-        RED_LED_ON;
-  }
-}
+
 
 int check_battery_voltage(void){    //returns mV
-    return ADCC_GetSingleConversion(channel_VBAT)*3.95;
+    return ADCC_GetSingleConversion(channel_VBAT)*3.95; // scaled by value calculated via testing
 }
 
 int check_current_draw(void){       //returns mA
