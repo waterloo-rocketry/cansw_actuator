@@ -10,9 +10,17 @@
         <itemPath>mcc_generated_files/pin_manager.h</itemPath>
         <itemPath>mcc_generated_files/mcc.h</itemPath>
         <itemPath>mcc_generated_files/i2c1.h</itemPath>
+        <itemPath>mcc_generated_files/adcc.h</itemPath>
+        <itemPath>mcc_generated_files/fvr.h</itemPath>
       </logicalFolder>
       <itemPath>config.h</itemPath>
       <itemPath>timer.h</itemPath>
+      <itemPath>lin_actuator.h</itemPath>
+      <itemPath>canlib/util/timing_util.h</itemPath>
+      <itemPath>canlib/can_common.h</itemPath>
+      <itemPath>canlib/can.h</itemPath>
+      <itemPath>canlib/message_types.h</itemPath>
+      <itemPath>canlib/pic18f26k83/pic18f26k83_can.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -28,11 +36,15 @@
         <itemPath>mcc_generated_files/mcc.c</itemPath>
         <itemPath>mcc_generated_files/device_config.c</itemPath>
         <itemPath>mcc_generated_files/i2c1.c</itemPath>
+        <itemPath>mcc_generated_files/adcc.c</itemPath>
+        <itemPath>mcc_generated_files/fvr.c</itemPath>
       </logicalFolder>
       <itemPath>main.c</itemPath>
+      <itemPath>lin_actuator.c</itemPath>
       <itemPath>timer.c</itemPath>
       <itemPath>canlib/can_common.c</itemPath>
       <itemPath>canlib/pic18f26k83/pic18f26k83_can.c</itemPath>
+      <itemPath>canlib/util/timing_util.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
@@ -43,6 +55,7 @@
   </logicalFolder>
   <sourceRootList>
     <Elem>canlib</Elem>
+    <Elem>mcc_generated_files</Elem>
   </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
@@ -84,7 +97,7 @@
       <HI-TECH-COMP>
         <property key="asmlist" value="true"/>
         <property key="define-macros" value="BOARD_UNIQUE_ID=BOARD_ID_VENT"/>
-        <property key="disable-optimizations" value="false"/>
+        <property key="disable-optimizations" value="true"/>
         <property key="extra-include-directories" value=""/>
         <property key="favor-optimization-for" value="-speed,+space"/>
         <property key="identifier-length" value="255"/>
@@ -195,7 +208,7 @@
       <XC8-config-global>
         <property key="advanced-elf" value="true"/>
         <property key="gcc-opt-driver-new" value="false"/>
-        <property key="gcc-opt-std" value="--std=c89"/>
+        <property key="gcc-opt-std" value="-std=c90"/>
         <property key="gcc-output-file-format" value="dwarf-3"/>
         <property key="output-file-format" value="-mcof,+elf"/>
         <property key="stack-size-high" value="auto"/>

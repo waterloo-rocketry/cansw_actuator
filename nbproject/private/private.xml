@@ -3,8 +3,12 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/Users/alexm/dev/cansw/vent/mcc_generated_files/i2c1.c</file>
-            <file>file:/Users/alexm/dev/cansw/vent/mcc_generated_files/i2c1.h</file>
+            <file>file:/Users/alexm/dev/cansw/vent/lin_actuator.h</file>
+            <file>file:/Users/alexm/dev/cansw/vent/lin_actuator.c</file>
+            <file>file:/Users/alexm/dev/cansw/vent/mcc_generated_files/mcc.c</file>
+            <file>file:/Users/alexm/dev/cansw/vent/main.c</file>
+            <file>file:/Users/alexm/dev/cansw/vent/canlib/util/timing_util.h</file>
+            <file>file:/Users/alexm/dev/cansw/vent/mcc_generated_files/mcc.h</file>
         </group>
     </open-files>
 </project-private>
