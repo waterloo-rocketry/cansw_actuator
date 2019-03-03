@@ -34,9 +34,12 @@ int main(int argc, char** argv) {
     FVR_Initialize();
     ADCC_Initialize();
     ADCC_DisableContinuousConversion();
+
     // I2C1 Pins: SCL1 -> RC3, SDA1 -> RC4
     I2C1_Initialize();  
     LED_init();
+    
+    // init our millisecond function
     timer0_init();
     
     // Enable global interrupts
@@ -67,7 +70,15 @@ int main(int argc, char** argv) {
         BLUE_LED_ON();
         __delay_ms(100);
         
-        send_status_ok();
+        // check for general board status
+        bool status_ok = true;
+        status_ok &= check_battery_voltage();
+        status_ok &= check_bus_voltage();
+        status_ok &= check_bus_current();
+        status_ok &= check_valve_status();
+        
+        // if there was an issue, a message would already have been sent out
+        if (status_ok) { send_status_ok(); }
 
         // For debugging purposes, put the valve state on the white LED
         switch (requested_valve_state) {
@@ -81,10 +92,6 @@ int main(int argc, char** argv) {
                 break;
         }
         
-        // FIXME
-        int battery_voltage = check_battery_voltage();// returns mV
-        int current_draw = check_current_draw();// returns mA
-        int LINAC_POT = ADCC_GetSingleConversion(channel_LINAC_POT);// returns mV
         
         vent_state = check_vent_status();
     }

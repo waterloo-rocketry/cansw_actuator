@@ -31,15 +31,24 @@ void LED_init(void) {
 //******************************************************************************
 
 // FIXME
-int check_battery_voltage(void){    //returns mV
-    return (int)(ADCC_GetSingleConversion(channel_VBAT)*3.95); // scaled by value calculated via testing
+bool check_battery_voltage(void){    //returns mV
+    (ADCC_GetSingleConversion(channel_VBAT)*3.95); // scaled by value calculated via testing
+    return true;
+}
+
+bool check_bus_voltage(void) {
+    return true;
 }
 
 // FIXME
-int check_current_draw(void){       //returns mA
-    return (int)(ADCC_GetSingleConversion(channel_VSENSE)/20); //i =v/r r = 0.2 ohms, v = VSENCE/100
+bool check_bus_current(void){       //returns mA
+    (ADCC_GetSingleConversion(channel_VSENSE)/20); //i =v/r r = 0.2 ohms, v = VSENCE/100
+    return true;
 }
 
+bool check_valve_status(void) {
+    return true;
+}
 
 // Send a CAN message with nominal status
 void send_status_ok(void) {
