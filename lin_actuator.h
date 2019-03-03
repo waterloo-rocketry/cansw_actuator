@@ -1,10 +1,3 @@
-/* 
- * File:   LINAC.h
- * Author: Zachariah Mears
- *
- * Created on February 10, 2019, 12:25 AM
- */
-
 #ifndef LINAC_H
 #define	LINAC_H
 
@@ -25,16 +18,13 @@ typedef enum
     stopped
 } lin_actuator_states;
 
-void set_DACs();
-
+bool lin_actuator_dac_init(void);
 void lin_actuator_init(void);
 
 void open_vent(void);
-
 void close_vent(void);
 
 lin_actuator_states check_vent_status(void);
-
 
 #endif	/* LINAC_H */
 

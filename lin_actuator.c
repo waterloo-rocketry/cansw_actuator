@@ -1,5 +1,7 @@
 #include <xc.h>
-#include<stdint.h>
+#include <stdint.h>
+#include <stdbool.h>
+
 #include "mcc_generated_files/i2c1.h"
 #include "mcc_generated_files/mcc.h"
 #include "lin_actuator.h"
@@ -10,20 +12,27 @@
 
 static lin_actuator_states moving = stopped;
 
-void set_DACs(){
+bool lin_actuator_dac_init(void) {
   uint8_t data_buf[2]; 
+  
   data_buf[0] = ((HIGH_DAC_VAL & 0xf0) >> 4); // shift the 4 MSB to the 4 LSB
   data_buf[1] = ((HIGH_DAC_VAL & 0x0f) << 4); // mask the 4MSB then shift the 4 LSB to the 4MSB
   i2c1_writeNBytes(HIGH_DAC_ADDRESS, data_buf, 2);
+  
   data_buf[0] = ((LOW_DAC_VAL & 0xf0) >> 4); // shift the 4 MSB to the 4 LSB
   data_buf[1] = ((LOW_DAC_VAL) << 4); // mask the 4MSB then shift the 4 LSB to the 4MSB
   i2c1_writeNBytes(LOW_DAC_ADDRESS, data_buf, 2); 
+  
   if(i2c1_getLastError() == I2C1_FAIL_TIMEOUT){
         RED_LED_ON();
+        return false;
+  } else {
+      // all is well
+      return true;
   }
 }
 
- void lin_actuator_init() {
+void lin_actuator_init(void) {
     TRISB1 = 0;     //set MOTOR_FWD as output
     LATB1 = 0;
     
@@ -41,18 +50,19 @@ void set_DACs(){
     
 }
  
-void open_vent(void){
+void open_vent(void) {
     LATB1 = 0;      //FWD low
     LATB2 = 1;      //BWD high  
     moving = opening;
 }
-void close_vent(void){
+
+void close_vent(void) {
     LATB2 = 0;      //BWD low
     LATB1 = 1;      //FWD high
     moving = closing;
 }
 
-lin_actuator_states check_vent_status(void){
+lin_actuator_states check_vent_status(void) {
     lin_actuator_states status = nominal;
     
     if(moving == opening){

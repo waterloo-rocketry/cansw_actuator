@@ -45,6 +45,8 @@
       <itemPath>canlib/can_common.c</itemPath>
       <itemPath>canlib/pic18f26k83/pic18f26k83_can.c</itemPath>
       <itemPath>canlib/util/timing_util.c</itemPath>
+      <itemPath>vent.h</itemPath>
+      <itemPath>vent.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
