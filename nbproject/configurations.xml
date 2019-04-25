@@ -47,6 +47,8 @@
       <itemPath>canlib/util/timing_util.c</itemPath>
       <itemPath>vent.h</itemPath>
       <itemPath>vent.c</itemPath>
+      <itemPath>error_checks.c</itemPath>
+      <itemPath>error_checks.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"

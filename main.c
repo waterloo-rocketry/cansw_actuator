@@ -13,89 +13,120 @@
 #include "mcc_generated_files/pin_manager.h"
 
 #include "vent.h"
+#include "error_checks.h"
 #include "lin_actuator.h"
 #include "timer.h"
 
 #include <xc.h>
 
 static void can_msg_handler(can_msg_t *msg);
+static void send_status_ok(void);
 
 // Follows VALVE_STATE in message_types.h
 // SHOULD ONLY BE MODIFIED IN ISR
-static uint8_t requested_valve_state = VALVE_OPEN;
-
-lin_actuator_states vent_state = nominal;
+static enum VALVE_STATE requested_valve_state = VALVE_OPEN;
 
 int main(int argc, char** argv) {
     // MCC generated initializer
     SYSTEM_Initialize();
     OSCILLATOR_Initialize();
-    
+
     FVR_Initialize();
     ADCC_Initialize();
     ADCC_DisableContinuousConversion();
 
     // I2C1 Pins: SCL1 -> RC3, SDA1 -> RC4
-    I2C1_Initialize();  
+    I2C1_Initialize();
     LED_init();
-    
+
     // init our millisecond function
     timer0_init();
-    
+
     // Enable global interrupts
     INTCON0bits.GIE = 1;
-    
+
     // Set up CAN TX
     TRISC0 = 0;
     RC0PPS = 0x33;
-    
+
     // Set up CAN RX
     TRISC1 = 1;
     ANSELC1 = 0;
     CANRXPPS = 0x11;
-    
+
     // set up CAN module
     can_timing_t can_setup;
     can_generate_timing_params(_XTAL_FREQ, &can_setup);
     can_init(&can_setup, can_msg_handler);
-    
-    // Set up linear actuator
-    lin_actuator_init();
-    lin_actuator_dac_init();
-    
-    close_vent();
-    while (1) {
-        BLUE_LED_OFF();
-        __delay_ms(100);
-        BLUE_LED_ON();
-        __delay_ms(100);
-        
-        // check for general board status
-        bool status_ok = true;
-        status_ok &= check_battery_voltage();
-        status_ok &= check_bus_voltage();
-        status_ok &= check_bus_current();
-        status_ok &= check_valve_status();
-        
-        // if there was an issue, a message would already have been sent out
-        if (status_ok) { send_status_ok(); }
 
-        // For debugging purposes, put the valve state on the white LED
-        switch (requested_valve_state) {
-            case VALVE_OPEN:
-                WHITE_LED_ON();
-                break;
-            case VALVE_CLOSED:
-                WHITE_LED_OFF();
-                break;
-            default:
-                break;
+    // loop timer
+    uint32_t last_millis = millis();
+
+    // Set up linear actuator - maybe this shouldn't block forever on failure
+    lin_actuator_init();
+    RED_LED_ON();
+    while (!lin_actuator_dac_init()) {
+        if (millis() - last_millis > MAX_LOOP_TIME_DIFF_ms) {
+            can_msg_t error_msg;
+            build_board_stat_msg(millis(), E_CANNOT_INIT_DACS, NULL, 0, &error_msg);
+            can_send(&error_msg, 3);
+            last_millis = millis();
         }
-        
-        
-        vent_state = check_vent_status();
     }
-    
+    RED_LED_OFF();
+    vent_open();
+
+    bool blue_led_on = false;   // visual heartbeat
+    while (1) {
+        if (millis() - last_millis > MAX_LOOP_TIME_DIFF_ms) {
+
+            BLUE_LED_OFF();
+            __delay_ms(100);
+            BLUE_LED_ON();
+            __delay_ms(100);
+
+            // check for general board status
+            bool status_ok = true;
+            status_ok &= check_battery_voltage_error();
+            status_ok &= check_bus_current_error();
+            status_ok &= check_valve_pin_error(requested_valve_state);
+            status_ok &= check_valve_pot_error();
+
+            // if there was an issue, a message would already have been sent out
+            if (status_ok) { send_status_ok(); }
+
+            // check valves before we set them
+            vent_send_status(requested_valve_state);
+
+            // "thread safe" because main loop should never write to requested_valve_state
+            if (requested_valve_state == VALVE_OPEN) {
+                WHITE_LED_ON();
+                vent_open();
+            } else if (requested_valve_state == VALVE_CLOSED) {
+                WHITE_LED_OFF();
+                vent_close();
+            } else {
+                // shouldn't get here - we messed up
+                can_msg_t error_msg;
+                build_board_stat_msg(millis(), E_CODING_FUCKUP, NULL, 0, &error_msg);
+                can_send(&error_msg, 3);
+            }
+
+            // visual heartbeat indicator
+            if (blue_led_on) {
+                BLUE_LED_OFF();
+                blue_led_on = false;
+            } else {
+                BLUE_LED_ON();
+                blue_led_on = true;
+            }
+
+            // update our loop counter
+            last_millis = millis();
+        }
+    }
+
+    // unreachable
     return (EXIT_SUCCESS);
 }
 
@@ -122,7 +153,7 @@ static void can_msg_handler(can_msg_t *msg) {
         case MSG_VENT_VALVE_CMD:
             // see message_types.h for message format
             // vent position will be updated synchronously
-            requested_valve_state = msg->data[3];
+            requested_valve_state = get_req_valve_state(msg);
             break;
 
         case MSG_LEDS_ON:
@@ -155,6 +186,15 @@ static void can_msg_handler(can_msg_t *msg) {
             // send a message or something
             break;
     }
-    
+
     // keep track of heartbeat here
+}
+
+// Send a CAN message with nominal status
+static void send_status_ok(void) {
+    can_msg_t board_stat_msg;
+    build_board_stat_msg(millis(), E_NOMINAL, NULL, 0, &board_stat_msg);
+
+    // send it off at low priority
+    can_send(&board_stat_msg, 0);
 }
