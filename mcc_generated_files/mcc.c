@@ -59,16 +59,16 @@ void SYSTEM_Initialize(void)
 
 void OSCILLATOR_Initialize(void)
 {
-    // NOSC HFINTOSC; NDIV 4; 
-    OSCCON1 = 0x62;
-    // CSWHOLD may proceed; SOSCPWR Low power; 
-    OSCCON3 = 0x00;
-    // MFOEN disabled; LFOEN disabled; ADOEN disabled; SOSCEN disabled; EXTOEN disabled; HFOEN disabled; 
-    OSCEN = 0x00;
-    // HFFRQ 4_MHz; 
-    OSCFRQ = 0x02;
-    // TUN 0; 
-    OSCTUNE = 0x00;
+
+    //Select external oscillator with PLL of 1:1
+    OSCCON1 = 0b01110000;
+    //wait until the clock switch has happened
+    while (OSCCON3bits.ORDY == 0)  {}
+    //if the currently active clock (CON2) isn't the selected clock (CON1)
+    if (OSCCON2 != 0b01110000) {
+        //infinite loop, something is broken, what even is an assert()?
+        while (1) {}
+    }
 }
 
 void PMD_Initialize(void)
