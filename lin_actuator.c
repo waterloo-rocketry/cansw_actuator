@@ -5,6 +5,7 @@
 #include "mcc_generated_files/i2c1.h"
 #include "mcc_generated_files/mcc.h"
 #include "lin_actuator.h"
+#include "vent.h"
 
 bool lin_actuator_dac_init(void) {
   uint8_t data_buf[2]; 
@@ -44,11 +45,15 @@ void lin_actuator_init(void) {
 }
  
 void vent_open(void) {
+    WHITE_LED_ON();
+
     LATB1 = 0;      //FWD low
     LATB2 = 1;      //BWD high  
 }
 
 void vent_close(void) {
+    WHITE_LED_OFF();
+
     LATB2 = 0;      //BWD low
     LATB1 = 1;      //FWD high
 }

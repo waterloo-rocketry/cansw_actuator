@@ -9,6 +9,7 @@
 #define VENT_BATT_UNDERVOLTAGE_THRESHOLD_mV 8500        // on valve batt
 #define VENT_BATT_OVERVOLTAGE_THRESHOLD_mV 9500         // on valve batt
 #define VENT_OVERCURRENT_THRESHOLD_mA 300               // from bus line
+#define MAX_CAN_IDLE_TIME_MS 1000
 
 // General board status checkers
 bool check_battery_voltage_error(void);

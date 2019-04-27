@@ -25,6 +25,7 @@ static void send_status_ok(void);
 // Follows VALVE_STATE in message_types.h
 // SHOULD ONLY BE MODIFIED IN ISR
 static enum VALVE_STATE requested_valve_state = VALVE_OPEN;
+static uint32_t last_can_traffic_timestamp_ms = 0;
 
 int main(int argc, char** argv) {
     // MCC generated initializer
@@ -99,11 +100,10 @@ int main(int argc, char** argv) {
             vent_send_status(requested_valve_state);
 
             // "thread safe" because main loop should never write to requested_valve_state
-            if (requested_valve_state == VALVE_OPEN) {
-                WHITE_LED_ON();
+            if ((millis() - last_can_traffic_timestamp_ms > MAX_CAN_IDLE_TIME_MS)
+                || (requested_valve_state == VALVE_OPEN)) {
                 vent_open();
             } else if (requested_valve_state == VALVE_CLOSED) {
-                WHITE_LED_OFF();
                 vent_close();
             } else {
                 // shouldn't get here - we messed up
@@ -188,6 +188,7 @@ static void can_msg_handler(can_msg_t *msg) {
     }
 
     // keep track of heartbeat here
+    last_can_traffic_timestamp_ms = millis();
 }
 
 // Send a CAN message with nominal status
