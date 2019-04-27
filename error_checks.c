@@ -2,6 +2,7 @@
 #include "canlib/can_common.h"
 #include "canlib/pic18f26k83/pic18f26k83_can.h"
 #include "canlib/message_types.h"
+#include "canlib/util/can_tx_buffer.h"
 
 #include "mcc_generated_files/fvr.h"
 #include "mcc_generated_files/adcc.h"
@@ -41,7 +42,7 @@ bool check_battery_voltage_error(void){    //returns mV
 
         can_msg_t error_msg;
         build_board_stat_msg(timestamp, error_code, batt_data, 2, &error_msg);
-        can_send(&error_msg, 3);    // send at high priority
+        txb_enqueue(&error_msg);
         return false;
     }
 
@@ -61,7 +62,7 @@ bool check_bus_current_error(void){
 
         can_msg_t error_msg;
         build_board_stat_msg(timestamp, E_BUS_OVER_CURRENT, curr_data, 2, &error_msg);
-        can_send(&error_msg, 3);    // send at high priority
+        txb_enqueue(&error_msg);
         return false;
     }
 

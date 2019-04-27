@@ -6,6 +6,7 @@
 #include "canlib/can_common.h"
 #include "canlib/pic18f26k83/pic18f26k83_can.h"
 #include "canlib/message_types.h"
+#include "canlib/util/can_tx_buffer.h"
 
 #include "mcc_generated_files/i2c1.h"
 #include "mcc_generated_files/mcc.h"
@@ -95,5 +96,5 @@ void vent_send_status(enum VALVE_STATE req_state) {
 
     can_msg_t stat_msg;
     build_valve_stat_msg(millis(), curr_state, req_state, MSG_VENT_VALVE_STATUS, &stat_msg);
-    can_send(&stat_msg, 0);
+    txb_enqueue(&stat_msg);
 }

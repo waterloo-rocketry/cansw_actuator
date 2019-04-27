@@ -6,6 +6,7 @@
 #include "canlib/pic18f26k83/pic18f26k83_can.h"
 #include "canlib/message_types.h"
 #include "canlib/util/timing_util.h"
+#include "canlib/util/can_tx_buffer.h"
 
 #include "mcc_generated_files/i2c1.h"
 #include "mcc_generated_files/mcc.h"
@@ -19,13 +20,16 @@
 
 #include <xc.h>
 
-static void can_msg_handler(can_msg_t *msg);
+static void can_msg_handler(const can_msg_t *msg);
 static void send_status_ok(void);
 
 // Follows VALVE_STATE in message_types.h
 // SHOULD ONLY BE MODIFIED IN ISR
 static enum VALVE_STATE requested_valve_state = VALVE_OPEN;
 static uint32_t last_can_traffic_timestamp_ms = 0;
+
+//memory pool for the CAN tx buffer
+uint8_t tx_pool[100];
 
 int main(int argc, char** argv) {
     // MCC generated initializer
@@ -59,6 +63,8 @@ int main(int argc, char** argv) {
     can_timing_t can_setup;
     can_generate_timing_params(_XTAL_FREQ, &can_setup);
     can_init(&can_setup, can_msg_handler);
+    // set up CAN tx buffer
+    txb_init(tx_pool, sizeof(tx_pool), can_send, can_send_rdy);
 
     // loop timer
     uint32_t last_millis = millis();
@@ -66,14 +72,15 @@ int main(int argc, char** argv) {
     // Set up linear actuator - maybe this shouldn't block forever on failure
     lin_actuator_init();
     RED_LED_ON();
-    while (!lin_actuator_dac_init()) {
+    /*while (!lin_actuator_dac_init()) {
         if (millis() - last_millis > MAX_LOOP_TIME_DIFF_ms) {
             can_msg_t error_msg;
             build_board_stat_msg(millis(), E_CANNOT_INIT_DACS, NULL, 0, &error_msg);
-            can_send(&error_msg, 3);
+            txb_enqueue(&error_msg);
             last_millis = millis();
         }
-    }
+        txb_heartbeat(); // send out queued CAN messages
+    }*/
     RED_LED_OFF();
     vent_open();
 
@@ -102,14 +109,16 @@ int main(int argc, char** argv) {
             // "thread safe" because main loop should never write to requested_valve_state
             if ((millis() - last_can_traffic_timestamp_ms > MAX_CAN_IDLE_TIME_MS)
                 || (requested_valve_state == VALVE_OPEN)) {
+                RED_LED_ON();
                 vent_open();
             } else if (requested_valve_state == VALVE_CLOSED) {
+                RED_LED_OFF();
                 vent_close();
             } else {
                 // shouldn't get here - we messed up
                 can_msg_t error_msg;
                 build_board_stat_msg(millis(), E_CODING_FUCKUP, NULL, 0, &error_msg);
-                can_send(&error_msg, 3);
+                txb_enqueue(&error_msg);
             }
 
             // visual heartbeat indicator
@@ -124,6 +133,8 @@ int main(int argc, char** argv) {
             // update our loop counter
             last_millis = millis();
         }
+        //send any queued CAN messages
+        txb_heartbeat();
     }
 
     // unreachable
@@ -143,8 +154,14 @@ static void interrupt interrupt_handler() {
     }
 }
 
-static void can_msg_handler(can_msg_t *msg) {
+static void can_msg_handler(const can_msg_t *msg) {
     uint16_t msg_type = get_message_type(msg);
+
+    // ignore messages that were sent from this board
+    if (get_board_unique_id(msg) == BOARD_UNIQUE_ID) {
+        return;
+    }
+
     switch (msg_type) {
         case MSG_GENERAL_CMD:
             // nothing right now
@@ -197,5 +214,5 @@ static void send_status_ok(void) {
     build_board_stat_msg(millis(), E_NOMINAL, NULL, 0, &board_stat_msg);
 
     // send it off at low priority
-    can_send(&board_stat_msg, 0);
+    txb_enqueue(&board_stat_msg);
 }
