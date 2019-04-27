@@ -2,10 +2,16 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#include "canlib/can.h"
+#include "canlib/can_common.h"
+#include "canlib/pic18f26k83/pic18f26k83_can.h"
+#include "canlib/message_types.h"
+
 #include "mcc_generated_files/i2c1.h"
 #include "mcc_generated_files/mcc.h"
 #include "lin_actuator.h"
 #include "vent.h"
+#include "timer.h"
 
 bool lin_actuator_dac_init(void) {
   uint8_t data_buf[2];

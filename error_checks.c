@@ -10,6 +10,7 @@
 #include "timer.h"
 #include "vent.h"
 #include "error_checks.h"
+#include "lin_actuator.h"
 
 #include <stdlib.h>
 
