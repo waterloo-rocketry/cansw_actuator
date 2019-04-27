@@ -88,7 +88,7 @@ void vent_send_status(enum VALVE_STATE req_state) {
             curr_state = VALVE_UNK;
             break;
 
-        // 0b11 - both switches pressed
+        // 0b00 - both switches pressed
         default:
             curr_state = VALVE_ILLEGAL;
             break;
