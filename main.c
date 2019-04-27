@@ -72,7 +72,7 @@ int main(int argc, char** argv) {
     // Set up linear actuator - maybe this shouldn't block forever on failure
     lin_actuator_init();
     RED_LED_ON();
-    /*while (!lin_actuator_dac_init()) {
+    while (!lin_actuator_dac_init()) {
         if (millis() - last_millis > MAX_LOOP_TIME_DIFF_ms) {
             can_msg_t error_msg;
             build_board_stat_msg(millis(), E_CANNOT_INIT_DACS, NULL, 0, &error_msg);
@@ -80,7 +80,7 @@ int main(int argc, char** argv) {
             last_millis = millis();
         }
         txb_heartbeat(); // send out queued CAN messages
-    }*/
+    }
     RED_LED_OFF();
     vent_open();
 
