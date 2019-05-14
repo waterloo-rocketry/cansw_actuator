@@ -88,11 +88,6 @@ int main(int argc, char** argv) {
     while (1) {
         if (millis() - last_millis > MAX_LOOP_TIME_DIFF_ms) {
 
-            BLUE_LED_OFF();
-            __delay_ms(100);
-            BLUE_LED_ON();
-            __delay_ms(100);
-
             // check for general board status
             bool status_ok = true;
             status_ok &= check_battery_voltage_error();
