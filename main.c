@@ -104,10 +104,10 @@ int main(int argc, char** argv) {
             // "thread safe" because main loop should never write to requested_valve_state
             if ((millis() - last_can_traffic_timestamp_ms > MAX_CAN_IDLE_TIME_MS)
                 || (requested_valve_state == VALVE_OPEN)) {
-                RED_LED_ON();
+                WHITE_LED_ON();
                 vent_open();
             } else if (requested_valve_state == VALVE_CLOSED) {
-                RED_LED_OFF();
+                WHITE_LED_OFF();
                 vent_close();
             } else {
                 // shouldn't get here - we messed up
