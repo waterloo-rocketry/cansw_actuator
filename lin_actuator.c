@@ -65,29 +65,29 @@ void vent_send_status(enum VALVE_STATE req_state) {
     // This is the same as the injector valve status. We don't report POT status
     enum VALVE_STATE curr_state;
 
-    // RB3 = LIM_HIGH (closed), RB4 = LIM_LOW (open) - refer to schematic
-    // Limit switch signals are active low
-    uint8_t limit_pins = PORTBbits.RB3 << 1 | PORTBbits.RB4;
-    switch (limit_pins) {
-        // closed switch pressed only
-        case 0b01:
-            curr_state = VALVE_CLOSED;
-            break;
+    adc_result_t pot_raw = ADCC_GetSingleConversion(channel_LINAC_POT);
+    // Vref: 4.096V, Resolution: 12 bits -> raw ADC value is precisely in mV
+    uint16_t pot_voltage_mV = (uint16_t)pot_raw;
 
-        // open switch pressed only
-        case 0b10:
-            curr_state = VALVE_OPEN;
-            break;
+    // Potentiometer       --------v
+    // LOWER_LIMIT (OPEN) |<--------------------------------->| UPPER_LIMIT (CLOSED)
 
-        // neither switch pressed
-        case 0b11:
-            curr_state = VALVE_UNK;
-            break;
+    // close to the lower voltage limit (retracted)
+    if (pot_voltage_mV - LIN_ACT_LOWER_LIMIT_mV < LIN_ACT_TOLERANCE_mV) {
+        curr_state = VALVE_OPEN;
 
-        // 0b00 - both switches pressed
-        default:
-            curr_state = VALVE_ILLEGAL;
-            break;
+    // close to upper voltage limit (extended)
+    } else if (LIN_ACT_UPPER_LIMIT_mV - pot_voltage_mV < LIN_ACT_TOLERANCE_mV) {
+        curr_state = VALVE_CLOSED;
+
+    // somewhere in between, but not close to either
+    } else if (LIN_ACT_LOWER_LIMIT_mV < pot_voltage_mV
+            && pot_voltage_mV < LIN_ACT_UPPER_LIMIT_mV) {
+        curr_state = VALVE_UNK;
+
+    // outside the voltage limits
+    } else {
+        curr_state = VALVE_ILLEGAL;
     }
 
     can_msg_t stat_msg;

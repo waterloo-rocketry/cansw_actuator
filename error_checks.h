@@ -5,10 +5,19 @@
 
 #include <stdbool.h>
 
-// FIXME: these values need to be nailed down
-#define VENT_BATT_UNDERVOLTAGE_THRESHOLD_mV 8500        // on valve batt
-#define VENT_BATT_OVERVOLTAGE_THRESHOLD_mV 9500         // on valve batt
-#define VENT_OVERCURRENT_THRESHOLD_mA 300               // from bus line
+// at this voltage, the vent valve will automatically open if closed
+#define VENT_BATT_UNDERVOLTAGE_PANIC_THRESHOLD_mV 7500
+
+// at this voltage, a warning will be sent out over CAN
+#define VENT_BATT_UNDERVOLTAGE_THRESHOLD_mV 8000
+
+// at this voltage, a warning will be sent out over CAN
+#define VENT_BATT_OVERVOLTAGE_THRESHOLD_mV 9500
+
+// From bus line. At this current, a warning will be sent out over CAN
+#define VENT_OVERCURRENT_THRESHOLD_mA 300
+
+// If we don't hear CAN traffic for this long, the vent valve will automatically open
 #define MAX_CAN_IDLE_TIME_MS 1000
 
 // General board status checkers
