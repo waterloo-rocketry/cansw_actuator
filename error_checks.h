@@ -22,6 +22,7 @@
 
 // General board status checkers
 bool check_battery_voltage_error(void);
+bool is_batt_voltage_critical(void);
 bool check_bus_current_error(void);
 bool check_valve_pin_error(enum VALVE_STATE req_state);
 bool check_valve_pot_error(void);

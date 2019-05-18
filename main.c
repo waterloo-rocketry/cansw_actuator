@@ -101,8 +101,13 @@ int main(int argc, char** argv) {
             // check valves before we set them
             vent_send_status(requested_valve_state);
 
+            // Open vent valve if:
+            // 1. We haven't heard CAN traffic in a while
+            // 2. We're low on battery voltage
+            // 3. We were told to open it
             // "thread safe" because main loop should never write to requested_valve_state
             if ((millis() - last_can_traffic_timestamp_ms > MAX_CAN_IDLE_TIME_MS)
+                || is_batt_voltage_critical()
                 || (requested_valve_state == VALVE_OPEN)) {
                 WHITE_LED_ON();
                 vent_open();

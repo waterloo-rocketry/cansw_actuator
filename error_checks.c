@@ -19,6 +19,8 @@
 //                              STATUS CHECKS                                 //
 //******************************************************************************
 
+static bool battery_voltage_critical = false;
+
 bool check_battery_voltage_error(void){    //returns mV
     adc_result_t batt_raw = ADCC_GetSingleConversion(channel_VBAT);
 
@@ -43,11 +45,27 @@ bool check_battery_voltage_error(void){    //returns mV
         can_msg_t error_msg;
         build_board_stat_msg(timestamp, error_code, batt_data, 2, &error_msg);
         txb_enqueue(&error_msg);
+
+        // main loop should check this and open the vent valve if needed
+        if (batt_voltage_mV < VENT_BATT_UNDERVOLTAGE_PANIC_THRESHOLD_mV) {
+            // need to open the vent valve
+            battery_voltage_critical = true;
+        } else {
+            // low on battery but still ok
+            battery_voltage_critical = false;
+        }
+
+        // shit's bad yo
         return false;
     }
 
     // things look ok
+    battery_voltage_critical = false;
     return true;
+}
+
+bool is_batt_voltage_critical(void) {
+    return battery_voltage_critical;
 }
 
 bool check_bus_current_error(void){
@@ -72,14 +90,14 @@ bool check_bus_current_error(void){
 
 bool check_valve_pin_error(enum VALVE_STATE req_state) {
     return true;
-    
+
     // Error cases:
     // check that digital pin reads match what they should be (a la injector)
 }
 
 bool check_valve_pot_error(void) {
     return true;
-    
+
     // Error case:
     // feedback potentiometer reading outside the range set by the DACs
 }
