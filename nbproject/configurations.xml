@@ -49,6 +49,8 @@
       <itemPath>vent.c</itemPath>
       <itemPath>error_checks.c</itemPath>
       <itemPath>error_checks.h</itemPath>
+      <itemPath>canlib/util/can_tx_buffer.c</itemPath>
+      <itemPath>canlib/util/safe_ring_buffer.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
