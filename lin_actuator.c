@@ -21,10 +21,6 @@ bool lin_actuator_dac_init(void) {
   data_buf[1] = ((HIGH_DAC_VAL & 0x0f) << 4);
   i2c1_writeNBytes(HIGH_DAC_ADDRESS, data_buf, 2);
 
-  data_buf[0] = ((LOW_DAC_VAL & 0xf0) >> 4);
-  data_buf[1] = ((LOW_DAC_VAL & 0x0f) << 4);
-  i2c1_writeNBytes(LOW_DAC_ADDRESS, data_buf, 2);
-
   if(i2c1_getLastError() == I2C1_FAIL_TIMEOUT){
         return false;
   } else {

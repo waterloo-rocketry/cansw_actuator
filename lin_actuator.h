@@ -13,8 +13,7 @@
 
 #define mV_TO_BIN_SCALING_FACTOR 0.051
 
-#define HIGH_DAC_VAL 51 //from 0-255, multiply  desired voltage by 51
-#define LOW_DAC_VAL 5
+#define HIGH_DAC_VAL 116 //from 0-255, multiply  desired voltage by 51
 
 typedef enum
 {
