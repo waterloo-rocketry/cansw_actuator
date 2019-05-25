@@ -7,9 +7,9 @@
 #define HIGH_DAC_ADDRESS 0x4d
 #define LOW_DAC_ADDRESS 0x4c
 
-#define LIN_ACT_UPPER_LIMIT_mV 2270
-#define LIN_ACT_LOWER_LIMIT_mV 500
-#define LIN_ACT_TOLERANCE_mV 25
+#define LIN_ACT_UPPER_LIMIT_mV 2320
+#define LIN_ACT_LOWER_LIMIT_mV 480
+#define LIN_ACT_TOLERANCE_mV 50
 
 #define HIGH_DAC_VAL 116                //from 0-255, multiply  desired voltage by 51
 #define mV_TO_BIN_SCALING_FACTOR 0.051
