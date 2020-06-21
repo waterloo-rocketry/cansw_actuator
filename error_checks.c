@@ -101,11 +101,3 @@ bool check_valve_pin_error(enum VALVE_STATE req_state) {
     // check that digital pin reads match what they should be (a la injector)
 }
 
-bool check_valve_pot_error(void) {
-    return true;
-
-    // Error case:
-    // feedback potentiometer reading outside the range set by the DACs
-}
-
-

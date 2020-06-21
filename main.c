@@ -15,7 +15,8 @@
 
 #include "vent.h"
 #include "error_checks.h"
-#include "lin_actuator.h"
+/* #include "lin_actuator.h" */
+#include "valve.h"
 #include "timer.h"
 
 #include <xc.h>
@@ -69,19 +70,21 @@ int main(int argc, char** argv) {
     // loop timer
     uint32_t last_millis = millis();
 
-    // Set up linear actuator - maybe this shouldn't block forever on failure
-    lin_actuator_init();
+    // Set up valve
+    valve_init();
+
     RED_LED_ON();
-    while (!lin_actuator_dac_init()) {
-        if (millis() - last_millis > MAX_LOOP_TIME_DIFF_ms) {
-            can_msg_t error_msg;
-            build_board_stat_msg(millis(), E_CANNOT_INIT_DACS, NULL, 0, &error_msg);
-            txb_enqueue(&error_msg);
-            last_millis = millis();
-        }
-        txb_heartbeat(); // send out queued CAN messages
-    }
+    /* while (!lin_actuator_dac_init()) { */
+        /* if (millis() - last_millis > MAX_LOOP_TIME_DIFF_ms) { */
+            /* can_msg_t error_msg; */
+            /* build_board_stat_msg(millis(), E_CANNOT_INIT_DACS, NULL, 0, &error_msg); */
+            /* txb_enqueue(&error_msg); */
+            /* last_millis = millis(); */
+        /* } */
+        /* txb_heartbeat(); // send out queued CAN messages */
+    /* } */
     RED_LED_OFF();
+
     vent_open();
 
     bool blue_led_on = false;   // visual heartbeat
@@ -93,7 +96,6 @@ int main(int argc, char** argv) {
             status_ok &= check_battery_voltage_error();
             status_ok &= check_bus_current_error();
             status_ok &= check_valve_pin_error(requested_valve_state);
-            status_ok &= check_valve_pot_error();
 
             // if there was an issue, a message would already have been sent out
             if (status_ok) { send_status_ok(); }
@@ -109,10 +111,8 @@ int main(int argc, char** argv) {
             if ((millis() - last_can_traffic_timestamp_ms > MAX_CAN_IDLE_TIME_MS)
                 || is_batt_voltage_critical()
                 || (requested_valve_state == VALVE_OPEN)) {
-                WHITE_LED_ON();
                 vent_open();
             } else if (requested_valve_state == VALVE_CLOSED) {
-                WHITE_LED_OFF();
                 vent_close();
             } else {
                 // shouldn't get here - we messed up
