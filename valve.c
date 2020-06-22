@@ -2,23 +2,23 @@
 
 void vent_init(void){
     TRISB5 = 0; // set VALVE_CONTROL (pin 26) as output
-    LATB5 = 0; // TODO: this initializes VALVE_CONTROL to 0 - does this default to open or closed?
+    LATB5 = 0; // this opens the valve, which is what we want on startup
 
     TRISB4 = 1; // set LIMIT_OPEN (pin 25) as input
-    ANSELB4 = 0; // set as digital input TODO: Should this be digital or analog?
+    ANSELB4 = 0; // set as digital input
     
     TRISB3 = 1; // set LIMIT_CLOSED (pin 24) as input
-    ANSELB3 = 0; // set as digital input TODO: Should this be digital or analog?
+    ANSELB3 = 0; // set as digital input
 }
 
 void vent_open(void){
     WHITE_LED_ON();
-    LATB5 = 1; // TODO check whether positive opens or closes
+    LATB5 = 0;
 }
 
 void vent_close(void){
     WHITE_LED_OFF();
-    LATB5 = 0; // TODO check whether positive opens or closes
+    LATB5 = 1;
 }
 
 // TODO: do I really need to use snake_case in C? can I just refactor this entire codebase into camelCase?
