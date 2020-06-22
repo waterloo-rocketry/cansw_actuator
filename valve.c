@@ -23,7 +23,11 @@ void vent_close(void){
 
 // TODO: do I really need to use snake_case in C? can I just refactor this entire codebase into camelCase?
 bool getLimitOpenState(){
-    return TRISB4
+    return PORTBbits.RB4;
+}
+
+bool getLimitClosedState(){
+    return PORTBbits.RB3;
 }
 
 void vent_send_status(enum VALVE_STATE req_state) {
