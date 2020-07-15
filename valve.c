@@ -8,10 +8,14 @@
 #include "canlib/message_types.h"
 #include "canlib/util/can_tx_buffer.h"
 
-#include "vent.h"
-#include "valve.h"
+#include "mcc_generated_files/i2c1.h"
+#include "mcc_generated_files/mcc.h"
 
-void vent_init(void){
+#include "valve.h"
+#include "vent.h"
+#include "timer.h"
+
+void valve_init(void){
     TRISB5 = 0; // set VALVE_CONTROL (pin 26) as output
     LATB5 = 0; // this opens the valve, which is what we want on startup
 
@@ -69,7 +73,7 @@ void vent_send_status(enum VALVE_STATE req_state) {
     }
 
     can_msg_t stat_msg;
-    uint32_t millis_ = 0 // temp TODO fix
-    build_valve_stat_msg(millis_, curr_state, req_state, MSG_VENT_VALVE_STATUS, &stat_msg);
+    build_valve_stat_msg(millis(), curr_state, req_state,
+            MSG_VENT_VALVE_STATUS, &stat_msg);
     txb_enqueue(&stat_msg);
 }

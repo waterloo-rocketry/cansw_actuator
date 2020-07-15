@@ -1,6 +1,10 @@
 #ifndef VALVE_H
 #define	VALVE_H
-void vent_init(void);
+
+#include <stdbool.h>
+#include "canlib/message_types.h"
+
+void valve_init(void);
 
 void vent_open(void);
 void vent_close(void);
