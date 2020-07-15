@@ -7,4 +7,7 @@ void vent_close(void);
 
 void vent_send_status(enum VALVE_STATE req_state);
 
+bool getValveOpenState();
+bool getValveClosedState();
+
 #endif /*VALVE_H*/
