@@ -33,11 +33,11 @@ void vent_close(void){
 }
 
 // TODO: do I really need to use snake_case in C? can I just refactor this entire codebase into camelCase?
-bool getLimitOpenState(){
+bool getValveOpenState(){
     return PORTBbits.RB4;
 }
 
-bool getLimitClosedState(){
+bool getValveClosedState(){
     return PORTBbits.RB3;
 }
 
@@ -45,34 +45,31 @@ void vent_send_status(enum VALVE_STATE req_state) {
     // This is the same as the injector valve status.
     enum VALVE_STATE curr_state;
 
-    adc_result_t pot_raw = ADCC_GetSingleConversion(channel_LINAC_POT);
-    // Vref: 4.096V, Resolution: 12 bits -> raw ADC value is precisely in mV
-    uint16_t pot_voltage_mV = (uint16_t)pot_raw;
-
-    bool limit_open = getLimitOpenState();
-    bool limit_closed = getLimitClosedState();
+    bool valve_open = getValveOpenState();
+    bool valve_closed = getValveClosedState();
 
     // open
-    if (limit_open && !limit_closed){
+    if (valve_open && !valve_closed){
         curr_state = VALVE_OPEN;
     }
 
     // closed
-    else if (!limit_open && limit_closed){
+    else if (!valve_open && valve_closed){
         curr_state = VALVE_CLOSED;
     }
 
     // in between open and closed
-    else if (!limit_open && !limit_closed){
+    else if (!valve_open && !valve_closed){
         curr_state = VALVE_UNK;
     }
 
     // both limit switches triggered ie. both open and closed (illegal)
-    } else {
+    else {
         curr_state = VALVE_ILLEGAL;
     }
 
     can_msg_t stat_msg;
-    build_valve_stat_msg(millis(), curr_state, req_state, MSG_VENT_VALVE_STATUS, &stat_msg);
+    uint32_t millis_ = 0 // temp TODO fix
+    build_valve_stat_msg(millis_, curr_state, req_state, MSG_VENT_VALVE_STATUS, &stat_msg);
     txb_enqueue(&stat_msg);
 }
