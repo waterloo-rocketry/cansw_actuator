@@ -36,11 +36,11 @@ void vent_close(void){
     LATB5 = 1;
 }
 
-bool get_valve_open_state(){
+bool get_valve_open_state(void){
     return PORTBbits.RB4;
 }
 
-bool get_valve_closed_state(){
+bool get_valve_closed_state(void){
     return PORTBbits.RB3;
 }
 
