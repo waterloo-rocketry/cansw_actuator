@@ -15,7 +15,6 @@
 
 #include "vent.h"
 #include "error_checks.h"
-/* #include "lin_actuator.h" */
 #include "valve.h"
 #include "timer.h"
 
@@ -74,15 +73,6 @@ int main(int argc, char** argv) {
     valve_init();
 
     RED_LED_ON();
-    /* while (!lin_actuator_dac_init()) { */
-        /* if (millis() - last_millis > MAX_LOOP_TIME_DIFF_ms) { */
-            /* can_msg_t error_msg; */
-            /* build_board_stat_msg(millis(), E_CANNOT_INIT_DACS, NULL, 0, &error_msg); */
-            /* txb_enqueue(&error_msg); */
-            /* last_millis = millis(); */
-        /* } */
-        /* txb_heartbeat(); // send out queued CAN messages */
-    /* } */
     RED_LED_OFF();
 
     vent_open();

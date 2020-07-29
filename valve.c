@@ -21,7 +21,7 @@ void valve_init(void){
 
     TRISB4 = 1; // set LIMIT_OPEN (pin 25) as input
     ANSELB4 = 0; // set as digital input
-    
+
     TRISB3 = 1; // set LIMIT_CLOSED (pin 24) as input
     ANSELB3 = 0; // set as digital input
 }
@@ -36,12 +36,11 @@ void vent_close(void){
     LATB5 = 1;
 }
 
-// TODO: do I really need to use snake_case in C? can I just refactor this entire codebase into camelCase?
-bool getValveOpenState(){
+bool get_valve_open_state(){
     return PORTBbits.RB4;
 }
 
-bool getValveClosedState(){
+bool get_valve_closed_state(){
     return PORTBbits.RB3;
 }
 
@@ -49,8 +48,8 @@ void vent_send_status(enum VALVE_STATE req_state) {
     // This is the same as the injector valve status.
     enum VALVE_STATE curr_state;
 
-    bool valve_open = getValveOpenState();
-    bool valve_closed = getValveClosedState();
+    bool valve_open = get_valve_open_state();
+    bool valve_closed = get_valve_closed_state();
 
     // open
     if (valve_open && !valve_closed){
