@@ -54,7 +54,6 @@ void SYSTEM_Initialize(void)
     OSCILLATOR_Initialize();
     ADCC_Initialize();
     FVR_Initialize();
-    I2C1_Initialize();
 }
 
 void OSCILLATOR_Initialize(void)
