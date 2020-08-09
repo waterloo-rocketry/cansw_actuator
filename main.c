@@ -39,7 +39,6 @@ int main(int argc, char** argv) {
     ADCC_Initialize();
     ADCC_DisableContinuousConversion();
 
-    // I2C1 Pins: SCL1 -> RC3, SDA1 -> RC4
     LED_init();
 
     // init our millisecond function
