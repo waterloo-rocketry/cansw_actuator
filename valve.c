@@ -8,7 +8,6 @@
 #include "canlib/message_types.h"
 #include "canlib/util/can_tx_buffer.h"
 
-#include "mcc_generated_files/i2c1.h"
 #include "mcc_generated_files/mcc.h"
 
 #include "valve.h"

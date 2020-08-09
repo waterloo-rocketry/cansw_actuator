@@ -8,7 +8,6 @@
 #include "canlib/util/timing_util.h"
 #include "canlib/util/can_tx_buffer.h"
 
-#include "mcc_generated_files/i2c1.h"
 #include "mcc_generated_files/mcc.h"
 #include "mcc_generated_files/adcc.h"
 #include "mcc_generated_files/pin_manager.h"
@@ -41,7 +40,6 @@ int main(int argc, char** argv) {
     ADCC_DisableContinuousConversion();
 
     // I2C1 Pins: SCL1 -> RC3, SDA1 -> RC4
-    I2C1_Initialize();
     LED_init();
 
     // init our millisecond function
@@ -71,9 +69,6 @@ int main(int argc, char** argv) {
 
     // Set up valve
     valve_init();
-
-    RED_LED_ON();
-    RED_LED_OFF();
 
     vent_open();
 

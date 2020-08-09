@@ -18,6 +18,4 @@ Just Kaelan's (who is updating this codebase for vent board v2) notes on require
   * Therefore we dont get any feedback from the valve
   * And we use a pin that goes high or low to activate the solenoid instead of whatever complicated controls were needed for linac
 
-* look @ schematics, make it do the same thing as before.
-
-* there are some voltage dividers for a limit switch, those are so we can use board for moar, not needed in code.
+* there are some pullup resistors for a limit switch, those are so we can use board for more, not needed in code.
