@@ -5,12 +5,12 @@
 
 #define MAX_LOOP_TIME_DIFF_ms 250
 
-#define RED_LED_ON() (LATC5 = 0)
-#define RED_LED_OFF() (LATC5 = 1)
-#define WHITE_LED_ON() (LATC6 = 0)
-#define WHITE_LED_OFF() (LATC6 = 1)
-#define BLUE_LED_ON() (LATC7 = 0)
-#define BLUE_LED_OFF() (LATC7 = 1)
+#define RED_LED_ON() (LATD2 = 0)
+#define RED_LED_OFF() (LATD2 = 1)
+#define WHITE_LED_ON() (LATD3 = 0)
+#define WHITE_LED_OFF() (LATD3 = 1)
+#define BLUE_LED_ON() (LATD4 = 0)
+#define BLUE_LED_OFF() (LATD4 = 1)
 
 void LED_init(void);
 
