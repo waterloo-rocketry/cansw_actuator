@@ -1,12 +1,12 @@
 #include <xc.h>
 
 void LED_init(void) {
-    TRISD2 = 0;     //set C5 as output
-    LATD2 = 1;      // turn the led off
+    TRISC2 = 0;     // set C2 output
+    LATC2 = 1;      // turn the led off
     
-    TRISD3 = 0;
-    LATD3 = 1;      // turn the led off
+    TRISC3 = 0;     // set C3 output
+    LATC3 = 1;      // turn the led off
     
-    TRISD4 = 0;
-    LATD4 = 1;      // turn the led off
+    TRISC4 = 0;     // set C4 output
+    LATC4 = 1;      // turn the led off
 }
