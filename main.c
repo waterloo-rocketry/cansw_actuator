@@ -101,7 +101,7 @@ int main(int argc, char** argv) {
             } else {
                 // shouldn't get here - we messed up
                 can_msg_t error_msg;
-                build_board_stat_msg(millis(), E_CODING_FUCKUP, NULL, 0, &error_msg);
+                build_board_stat_msg(millis(), E_CODING_SCREWUP, NULL, 0, &error_msg);
                 txb_enqueue(&error_msg);
             }
 
