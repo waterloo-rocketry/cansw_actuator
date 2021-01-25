@@ -90,19 +90,7 @@ void PIN_MANAGER_Initialize(void)
     */
     ODCONA = 0x00;
     ODCONB = 0x00;
-    ODCONC = 0x18;
-	
-
-
-
-
-   
-    
-	
-    RC3PPS = 0x21;   //RC3->I2C1:SCL1;    
-    RC4PPS = 0x22;   //RC4->I2C1:SDA1;    
-    I2C1SDAPPSbits.I2C1SDAPPS = 0x14;   //RC4->I2C1:SDA1;    
-    I2C1SCLPPSbits.I2C1SCLPPS = 0x13;   //RC3->I2C1:SCL1;    
+    ODCONC = 0x00;
 }
   
 void PIN_MANAGER_IOC(void)
