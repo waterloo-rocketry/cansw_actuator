@@ -48,13 +48,13 @@ int main(int argc, char** argv) {
     INTCON0bits.GIE = 1;
 
     // Set up CAN TX
-    TRISC0 = 0;
-    RC0PPS = 0x33;
+    TRISC1 = 0;
+    RC1PPS = 0x33;
 
     // Set up CAN RX
-    TRISC1 = 1;
-    ANSELC1 = 0;
-    CANRXPPS = 0x11;
+    TRISC0 = 1;
+    ANSELC0 = 0;
+    CANRXPPS = 0x10;
 
     // set up CAN module
     can_timing_t can_setup;
