@@ -8,14 +8,13 @@
 #include "canlib/util/timing_util.h"
 #include "canlib/util/can_tx_buffer.h"
 
-#include "mcc_generated_files/i2c1.h"
 #include "mcc_generated_files/mcc.h"
 #include "mcc_generated_files/adcc.h"
 #include "mcc_generated_files/pin_manager.h"
 
 #include "vent.h"
 #include "error_checks.h"
-#include "lin_actuator.h"
+#include "valve.h"
 #include "timer.h"
 
 #include <xc.h>
@@ -40,8 +39,6 @@ int main(int argc, char** argv) {
     ADCC_Initialize();
     ADCC_DisableContinuousConversion();
 
-    // I2C1 Pins: SCL1 -> RC3, SDA1 -> RC4
-    I2C1_Initialize();
     LED_init();
 
     // init our millisecond function
@@ -51,13 +48,13 @@ int main(int argc, char** argv) {
     INTCON0bits.GIE = 1;
 
     // Set up CAN TX
-    TRISC0 = 0;
-    RC0PPS = 0x33;
+    TRISC1 = 0;
+    RC1PPS = 0x33;
 
     // Set up CAN RX
-    TRISC1 = 1;
-    ANSELC1 = 0;
-    CANRXPPS = 0x11;
+    TRISC0 = 1;
+    ANSELC0 = 0;
+    CANRXPPS = 0x10;
 
     // set up CAN module
     can_timing_t can_setup;
@@ -69,19 +66,9 @@ int main(int argc, char** argv) {
     // loop timer
     uint32_t last_millis = millis();
 
-    // Set up linear actuator - maybe this shouldn't block forever on failure
-    lin_actuator_init();
-    RED_LED_ON();
-    while (!lin_actuator_dac_init()) {
-        if (millis() - last_millis > MAX_LOOP_TIME_DIFF_ms) {
-            can_msg_t error_msg;
-            build_board_stat_msg(millis(), E_CANNOT_INIT_DACS, NULL, 0, &error_msg);
-            txb_enqueue(&error_msg);
-            last_millis = millis();
-        }
-        txb_heartbeat(); // send out queued CAN messages
-    }
-    RED_LED_OFF();
+    // Set up valve
+    valve_init();
+
     vent_open();
 
     bool blue_led_on = false;   // visual heartbeat
@@ -93,7 +80,6 @@ int main(int argc, char** argv) {
             status_ok &= check_battery_voltage_error();
             status_ok &= check_bus_current_error();
             status_ok &= check_valve_pin_error(requested_valve_state);
-            status_ok &= check_valve_pot_error();
 
             // if there was an issue, a message would already have been sent out
             if (status_ok) { send_status_ok(); }
@@ -109,15 +95,13 @@ int main(int argc, char** argv) {
             if ((millis() - last_can_traffic_timestamp_ms > MAX_CAN_IDLE_TIME_MS)
                 || is_batt_voltage_critical()
                 || (requested_valve_state == VALVE_OPEN)) {
-                WHITE_LED_ON();
                 vent_open();
             } else if (requested_valve_state == VALVE_CLOSED) {
-                WHITE_LED_OFF();
                 vent_close();
             } else {
                 // shouldn't get here - we messed up
                 can_msg_t error_msg;
-                build_board_stat_msg(millis(), E_CODING_FUCKUP, NULL, 0, &error_msg);
+                build_board_stat_msg(millis(), E_CODING_SCREWUP, NULL, 0, &error_msg);
                 txb_enqueue(&error_msg);
             }
 

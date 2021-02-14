@@ -11,7 +11,7 @@
 #include "timer.h"
 #include "vent.h"
 #include "error_checks.h"
-#include "lin_actuator.h"
+#include "valve.h"
 
 #include <stdlib.h>
 
@@ -100,12 +100,4 @@ bool check_valve_pin_error(enum VALVE_STATE req_state) {
     // Error cases:
     // check that digital pin reads match what they should be (a la injector)
 }
-
-bool check_valve_pot_error(void) {
-    return true;
-
-    // Error case:
-    // feedback potentiometer reading outside the range set by the DACs
-}
-
 

@@ -11,7 +11,11 @@
             <header-extensions>h</header-extensions>
             <asminc-extensions/>
             <sourceEncoding>ISO-8859-1</sourceEncoding>
-            <sourceRootList/>
+            <make-dep-projects/>
+            <sourceRootList>
+                <sourceRootElem>canlib</sourceRootElem>
+                <sourceRootElem>mcc_generated_files</sourceRootElem>
+            </sourceRootList>
             <confList>
                 <confElem>
                     <name>default</name>
@@ -21,7 +25,6 @@
             <formatting>
                 <project-formatting-style>false</project-formatting-style>
             </formatting>
-            <make-dep-projects/>
         </data>
     </configuration>
 </project>
