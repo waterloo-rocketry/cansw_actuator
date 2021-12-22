@@ -12,9 +12,9 @@
 #include "mcc_generated_files/adcc.h"
 #include "mcc_generated_files/pin_manager.h"
 
-#include "vent.h"
+#include "actuator.h"
+#include "board.h"
 #include "error_checks.h"
-#include "valve.h"
 #include "timer.h"
 
 #include <xc.h>
@@ -22,9 +22,9 @@
 static void can_msg_handler(const can_msg_t *msg);
 static void send_status_ok(void);
 
-// Follows VALVE_STATE in message_types.h
+// Follows ACTUATOR_STATE in message_types.h
 // SHOULD ONLY BE MODIFIED IN ISR
-static enum VALVE_STATE requested_valve_state = VALVE_OPEN;
+static enum ACTUATOR_STATE requested_actuator_state = SAFE_STATE;
 static uint32_t last_can_traffic_timestamp_ms = 0;
 
 //memory pool for the CAN tx buffer
@@ -66,10 +66,8 @@ int main(int argc, char** argv) {
     // loop timer
     uint32_t last_millis = millis();
 
-    // Set up valve
-    valve_init();
-
-    vent_open();
+    // Set up actuator
+    actuator_init();
 
     bool blue_led_on = false;   // visual heartbeat
     while (1) {
@@ -79,30 +77,23 @@ int main(int argc, char** argv) {
             bool status_ok = true;
             status_ok &= check_battery_voltage_error();
             status_ok &= check_bus_current_error();
-            status_ok &= check_valve_pin_error(requested_valve_state);
+            status_ok &= check_actuator_pin_error(requested_actuator_state);
 
             // if there was an issue, a message would already have been sent out
             if (status_ok) { send_status_ok(); }
 
-            // check valves before we set them
-            vent_send_status(requested_valve_state);
+            // perform actuation
+            actuator_send_status(requested_actuator_state);
 
-            // Open vent valve if:
+            // Set safe state if:
             // 1. We haven't heard CAN traffic in a while
             // 2. We're low on battery voltage
-            // 3. We were told to open it
-            // "thread safe" because main loop should never write to requested_valve_state
+            // "thread safe" because main loop should never write to requested_actuator_state
             if ((millis() - last_can_traffic_timestamp_ms > MAX_CAN_IDLE_TIME_MS)
-                || is_batt_voltage_critical()
-                || (requested_valve_state == VALVE_OPEN)) {
-                vent_open();
-            } else if (requested_valve_state == VALVE_CLOSED) {
-                vent_close();
+                    || is_batt_voltage_critical()) {
+                actuator_set(SAFE_STATE);
             } else {
-                // shouldn't get here - we messed up
-                can_msg_t error_msg;
-                build_board_stat_msg(millis(), E_CODING_SCREWUP, NULL, 0, &error_msg);
-                txb_enqueue(&error_msg);
+                actuator_set(requested_actuator_state);
             }
 
             // visual heartbeat indicator
@@ -154,14 +145,16 @@ static void can_msg_handler(const can_msg_t *msg) {
         case MSG_GENERAL_CMD:
             cmd_type = get_general_cmd_type(msg);
             if (cmd_type == BUS_DOWN_WARNING) {
-                requested_valve_state = VALVE_OPEN;
+                requested_actuator_state = SAFE_STATE;
             }
             break;
 
-        case MSG_VENT_VALVE_CMD:
+        case MSG_ACTUATOR_CMD:
             // see message_types.h for message format
-            // vent position will be updated synchronously
-            requested_valve_state = get_req_valve_state(msg);
+            if (get_actuator_id(msg) == ACTUATOR_ID) {
+                // vent position will be updated synchronously
+                requested_actuator_state = get_req_actuator_state(msg);
+            }
             break;
 
         case MSG_LEDS_ON:
@@ -177,21 +170,7 @@ static void can_msg_handler(const can_msg_t *msg) {
             break;
 
         // all the other ones - do nothing
-        case MSG_INJ_VALVE_CMD:
-        case MSG_DEBUG_MSG:
-        case MSG_DEBUG_PRINTF:
-        case MSG_VENT_VALVE_STATUS:
-        case MSG_INJ_VALVE_STATUS:
-        case MSG_SENSOR_ACC:
-        case MSG_SENSOR_GYRO:
-        case MSG_SENSOR_MAG:
-        case MSG_SENSOR_ANALOG:
-        case MSG_GENERAL_BOARD_STATUS:
-            break;
-
-        // illegal message type - should never get here
         default:
-            // send a message or something
             break;
     }
 
