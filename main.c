@@ -82,17 +82,16 @@ int main(int argc, char** argv) {
             // if there was an issue, a message would already have been sent out
             if (status_ok) { send_status_ok(); }
 
-            // perform actuation
-            actuator_send_status(requested_actuator_state);
-
             // Set safe state if:
             // 1. We haven't heard CAN traffic in a while
             // 2. We're low on battery voltage
             // "thread safe" because main loop should never write to requested_actuator_state
             if ((millis() - last_can_traffic_timestamp_ms > MAX_CAN_IDLE_TIME_MS)
                     || is_batt_voltage_critical()) {
+                actuator_send_status(SAFE_STATE);
                 actuator_set(SAFE_STATE);
             } else {
+                actuator_send_status(requested_actuator_state);
                 actuator_set(requested_actuator_state);
             }
 
