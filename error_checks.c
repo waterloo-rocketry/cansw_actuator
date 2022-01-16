@@ -8,10 +8,10 @@
 #include "mcc_generated_files/adcc.h"
 #include "mcc_generated_files/mcc.h"
 
-#include "timer.h"
-#include "vent.h"
 #include "error_checks.h"
-#include "valve.h"
+#include "timer.h"
+#include "board.h"
+#include "actuator.h"
 
 #include <stdlib.h>
 
@@ -31,14 +31,14 @@ bool check_battery_voltage_error(void){    //returns mV
     // we don't care too much about precision - some truncation is fine
     batt_voltage_mV = batt_voltage_mV * 3.95; // scaled by value calculated via testing
 
-    if (batt_voltage_mV < VENT_BATT_UNDERVOLTAGE_THRESHOLD_mV
-            || batt_voltage_mV > VENT_BATT_OVERVOLTAGE_THRESHOLD_mV) {
+    if (batt_voltage_mV < ACTUATOR_BATT_UNDERVOLTAGE_THRESHOLD_mV
+            || batt_voltage_mV > ACTUATOR_BATT_OVERVOLTAGE_THRESHOLD_mV) {
 
         uint32_t timestamp = millis();
         uint8_t batt_data[2] = {0};
         batt_data[0] = (batt_voltage_mV >> 8) & 0xff;
         batt_data[1] = (batt_voltage_mV >> 0) & 0xff;
-        enum BOARD_STATUS error_code = batt_voltage_mV < VENT_BATT_UNDERVOLTAGE_THRESHOLD_mV
+        enum BOARD_STATUS error_code = batt_voltage_mV < ACTUATOR_BATT_UNDERVOLTAGE_THRESHOLD_mV
                 ? E_BATT_UNDER_VOLTAGE
                 : E_BATT_OVER_VOLTAGE;
 
@@ -46,9 +46,9 @@ bool check_battery_voltage_error(void){    //returns mV
         build_board_stat_msg(timestamp, error_code, batt_data, 2, &error_msg);
         txb_enqueue(&error_msg);
 
-        // main loop should check this and open the vent valve if needed
-        if (batt_voltage_mV < VENT_BATT_UNDERVOLTAGE_PANIC_THRESHOLD_mV) {
-            // need to open the vent valve
+        // main loop should check this and go to safe state if needed
+        if (batt_voltage_mV < ACTUATOR_BATT_UNDERVOLTAGE_PANIC_THRESHOLD_mV) {
+            // need to go to safe state
             battery_voltage_critical = true;
         } else {
             // low on battery but still ok
@@ -62,7 +62,7 @@ bool check_battery_voltage_error(void){    //returns mV
     // also send the battery voltage as a sensor data message
     // this may or may not be the best place to put this
     can_msg_t batt_msg;
-    build_analog_data_msg(millis(), SENSOR_VENT_BATT, batt_voltage_mV, &batt_msg);
+    build_analog_data_msg(millis(), BATTERY_SENSOR_ID, batt_voltage_mV, &batt_msg);
     txb_enqueue(&batt_msg);
 
     // things look ok
@@ -76,9 +76,9 @@ bool is_batt_voltage_critical(void) {
 
 bool check_bus_current_error(void){
     adc_result_t sense_raw_mV = ADCC_GetSingleConversion(channel_VSENSE);
-    int curr_draw_mA = (sense_raw_mV) / 20;
+    uint16_t curr_draw_mA = (sense_raw_mV) / 20;
 
-    if (curr_draw_mA > VENT_OVERCURRENT_THRESHOLD_mA) {
+    if (curr_draw_mA > ACTUATOR_OVERCURRENT_THRESHOLD_mA) {
         uint32_t timestamp = millis();
         uint8_t curr_data[2] = {0};
         curr_data[0] = (curr_draw_mA >> 8) & 0xff;
@@ -94,10 +94,21 @@ bool check_bus_current_error(void){
     return true;
 }
 
-bool check_valve_pin_error(enum VALVE_STATE req_state) {
-    return true;
+bool check_actuator_pin_error(enum ACTUATOR_STATE req_state) {
+    enum ACTUATOR_STATE cur_state = get_actuator_state();
+    bool valid = true;
+    if (cur_state == ACTUATOR_ILLEGAL) { valid = false; }
 
-    // Error cases:
-    // check that digital pin reads match what they should be (a la injector)
+    if (!valid) {
+        uint8_t state_data[2] = {0};
+        state_data[0] = req_state;
+        state_data[1] = cur_state;
+        can_msg_t error_msg;
+        build_board_stat_msg(millis(), E_ACTUATOR_STATE, state_data, 2, &error_msg);
+        txb_enqueue(&error_msg);
+        return false;
+    }
+
+    return true;
 }
 

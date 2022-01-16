@@ -1,7 +1,11 @@
-#ifndef VENT_H
-#define	VENT_H
+#ifndef BOARD_H
+#define BOARD_H
 
 // Contains miscellaneous vent board-specific code
+
+#define SAFE_STATE ACTUATOR_OPEN
+#define ACTUATOR_ID ACTUATOR_VENT_VALVE
+#define BATTERY_SENSOR_ID SENSOR_VENT_BATT
 
 #define MAX_LOOP_TIME_DIFF_ms 250
 
@@ -14,5 +18,5 @@
 
 void LED_init(void);
 
-#endif	/* VENT_H */
+#endif	/* BOARD_H */
 
