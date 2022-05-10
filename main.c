@@ -134,6 +134,7 @@ static void can_msg_handler(const can_msg_t *msg) {
     // declare this in advance cause we can't declare it inside the switch
     // and I don't want to replace this entire thing with an ifelse
     int cmd_type = -1;
+    int dest_id = -1;
 
     // ignore messages that were sent from this board
     if (get_board_unique_id(msg) == BOARD_UNIQUE_ID) {
@@ -166,6 +167,13 @@ static void can_msg_handler(const can_msg_t *msg) {
             RED_LED_OFF();
             BLUE_LED_OFF();
             WHITE_LED_OFF();
+            break;
+        
+        case MSG_RESET_CMD:
+            dest_id = get_reset_board_id(msg);
+            if (dest_id == BOARD_UNIQUE_ID || dest_id == 0 ){
+                RESET();
+            }
             break;
 
         // all the other ones - do nothing
