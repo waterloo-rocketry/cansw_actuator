@@ -17,9 +17,9 @@
 void actuator_init(){
     TRISB5 = 0; // set ACTUATOR_CONTROL (pin 26) as output
     if (SAFE_STATE == ACTUATOR_OPEN) {
-        VALVE_OPEN();
+        RELAY_OFF();
     } else if (SAFE_STATE == ACTUATOR_CLOSED) {
-        VALVE_CLOSE();
+        RELAY_ON();
     } else {
         // Should not get here.
         while (1) {}; // panic, this will be caught early on in testing
@@ -34,11 +34,11 @@ void actuator_init(){
 
 void actuator_set(enum ACTUATOR_STATE state) {
     if (state == ACTUATOR_OPEN) {
-        WHITE_LED_ON();
-        VALVE_OPEN();
-    } else if (state == ACTUATOR_CLOSED) {
         WHITE_LED_OFF();
-        VALVE_CLOSE();
+        RELAY_OFF();
+    } else if (state == ACTUATOR_CLOSED) {
+        WHITE_LED_ON();
+        RELAY_ON();
     }
 }
 

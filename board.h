@@ -15,7 +15,7 @@
 #endif
 
 #if INJECTOR_BOARD
-#define SAFE_STATE ACTUATOR_CLOSED
+#define SAFE_STATE ACTUATOR_OPEN
 #define ACTUATOR_ID ACTUATOR_INJECTOR_VALVE
 #define BATTERY_SENSOR_ID SENSOR_INJ_BATT
 #elif VENT_BOARD
@@ -33,13 +33,9 @@
 #define BLUE_LED_ON()   (LATC2 = 0)
 #define BLUE_LED_OFF()  (LATC2 = 1)
 
-#if INJECTOR_BOARD
-#define VALVE_OPEN()    (LATB5 = 1)
-#define VALVE_CLOSE()   (LATB5 = 0)
-#elif VENT_BOARD
-#define VALVE_OPEN()    (LATB5 = 0)
-#define VALVE_CLOSE()   (LATB5 = 1)
-#endif
+#define RELAY_OFF()     (LATB5 = 0)
+#define RELAY_ON()      (LATB5 = 1)
+
 
 void LED_init(void);
 
