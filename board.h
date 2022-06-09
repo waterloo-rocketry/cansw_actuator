@@ -5,14 +5,8 @@
 
 // Contains miscellaneous board-specific code
 
-#define VENT_BOARD (BOARD_UNIQUE_ID & 0x8)
-
-// If I am not a VENT, then I am an INJECTOR
-#if VENT_BOARD
-#define INJECTOR_BOARD 0
-#else
-#define INJECTOR_BOARD 1
-#endif
+#define VENT_BOARD (BOARD_UNIQUE_ID == 0x0B || BOARD_UNIQUE_ID == 0x0C)
+#define INJECTOR_BOARD (BOARD_UNIQUE_ID == 0x01 || BOARD_UNIQUE_ID == 0x02)
 
 #if INJECTOR_BOARD
 #define SAFE_STATE ACTUATOR_OPEN
@@ -22,6 +16,8 @@
 #define SAFE_STATE ACTUATOR_OPEN
 #define ACTUATOR_ID ACTUATOR_VENT_VALVE
 #define BATTERY_SENSOR_ID SENSOR_VENT_BATT
+#else
+#error "Invalid actuator board ID"
 #endif
 
 #define MAX_LOOP_TIME_DIFF_ms 250
