@@ -14,6 +14,8 @@
 #include "board.h"
 #include "timer.h"
 
+#define HAS_LIMS 1
+
 void actuator_init(){
     TRISB5 = 0; // set ACTUATOR_CONTROL (pin 26) as output
     if (SAFE_STATE == ACTUATOR_OPEN) {
@@ -43,6 +45,9 @@ void actuator_set(enum ACTUATOR_STATE state) {
 }
 
 enum ACTUATOR_STATE get_actuator_state(void) {
+#if !HAS_LIMS
+    return ACTUATOR_UNK;
+#else
     // read limit switch values
     bool actuator_open = PORTBbits.RB4;
     bool actuator_closed = PORTBbits.RB3;
@@ -51,6 +56,7 @@ enum ACTUATOR_STATE get_actuator_state(void) {
     if (!actuator_open && actuator_closed) { return ACTUATOR_CLOSED; }
     if (!actuator_open && !actuator_closed) { return ACTUATOR_UNK; }
     return ACTUATOR_ILLEGAL; // both limit switches at same time
+#endif
 }
 
 void actuator_send_status(enum ACTUATOR_STATE req_state) {

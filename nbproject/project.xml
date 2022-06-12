@@ -13,8 +13,6 @@
             <sourceEncoding>ISO-8859-1</sourceEncoding>
             <make-dep-projects/>
             <sourceRootList>
-                <sourceRootElem>canlib</sourceRootElem>
-                <sourceRootElem>mcc_generated_files</sourceRootElem>
                 <sourceRootElem>.</sourceRootElem>
             </sourceRootList>
             <confList>
