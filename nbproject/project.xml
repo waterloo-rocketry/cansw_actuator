@@ -3,7 +3,7 @@
     <type>com.microchip.mplab.nbide.embedded.makeproject</type>
     <configuration>
         <data xmlns="http://www.netbeans.org/ns/make-project/1">
-            <name>Actuator</name>
+            <name>Vent</name>
             <creation-uuid>88092c7b-ac78-498d-b3fd-af28a2458c51</creation-uuid>
             <make-project-type>0</make-project-type>
             <c-extensions>c</c-extensions>
