@@ -5,19 +5,26 @@
 
 // Contains miscellaneous board-specific code
 
-#define VENT_BOARD (BOARD_UNIQUE_ID == 0x0B || BOARD_UNIQUE_ID == 0x0C)
-#define INJECTOR_BOARD (BOARD_UNIQUE_ID == 0x01 || BOARD_UNIQUE_ID == 0x02)
+// Change this to choose which board to use
+#define INJECTOR_BOARD
 
-#if INJECTOR_BOARD
-#define SAFE_STATE ACTUATOR_OPEN
+#ifdef INJECTOR_BOARD
+#define SAFE_STATE ACTUATOR_OFF
 #define ACTUATOR_ID ACTUATOR_INJECTOR_VALVE
-#define BATTERY_SENSOR_ID SENSOR_INJ_BATT
-#elif VENT_BOARD
-#define SAFE_STATE ACTUATOR_OPEN
+#endif
+
+#ifdef VENT_BOARD
+#define SAFE_STATE ACTUATOR_OFF
 #define ACTUATOR_ID ACTUATOR_VENT_VALVE
-#define BATTERY_SENSOR_ID SENSOR_VENT_BATT
-#else
-#error "Invalid actuator board ID"
+#endif
+
+#ifdef CAMERA
+#define SAFE_STATE ACTUATOR_OFF
+#define ACTUATOR_ID ACTUATOR_CAMERA_VALVE
+#endif
+
+#ifndef SAFE_STATE
+#error "Invalid actuator board identifier"
 #endif
 
 #define MAX_LOOP_TIME_DIFF_ms 250

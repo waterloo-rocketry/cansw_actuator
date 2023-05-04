@@ -18,9 +18,9 @@
 
 void actuator_init(){
     TRISB5 = 0; // set ACTUATOR_CONTROL (pin 26) as output
-    if (SAFE_STATE == ACTUATOR_OPEN) {
+    if (SAFE_STATE == ACTUATOR_OFF) {
         RELAY_OFF();
-    } else if (SAFE_STATE == ACTUATOR_CLOSED) {
+    } else if (SAFE_STATE == ACTUATOR_ON) {
         RELAY_ON();
     } else {
         // Should not get here.
@@ -35,10 +35,10 @@ void actuator_init(){
 }
 
 void actuator_set(enum ACTUATOR_STATE state) {
-    if (state == ACTUATOR_OPEN) {
+    if (state == ACTUATOR_OFF) {
         WHITE_LED_OFF();
         RELAY_OFF();
-    } else if (state == ACTUATOR_CLOSED) {
+    } else if (state == ACTUATOR_ON) {
         WHITE_LED_ON();
         RELAY_ON();
     }
@@ -52,8 +52,8 @@ enum ACTUATOR_STATE get_actuator_state(void) {
     bool actuator_open = PORTBbits.RB4;
     bool actuator_closed = PORTBbits.RB3;
     
-    if (actuator_open && !actuator_closed) { return ACTUATOR_OPEN; }
-    if (!actuator_open && actuator_closed) { return ACTUATOR_CLOSED; }
+    if (actuator_open && !actuator_closed) { return ACTUATOR_OFF; }
+    if (!actuator_open && actuator_closed) { return ACTUATOR_ON; }
     if (!actuator_open && !actuator_closed) { return ACTUATOR_UNK; }
     return ACTUATOR_ILLEGAL; // both limit switches at same time
 #endif
