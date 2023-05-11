@@ -62,7 +62,7 @@ bool check_battery_voltage_error(void){    //returns mV
     // also send the battery voltage as a sensor data message
     // this may or may not be the best place to put this
     can_msg_t batt_msg;
-    build_analog_data_msg(millis(), BATTERY_SENSOR_ID, batt_voltage_mV, &batt_msg);
+    build_analog_data_msg(millis(), SENSOR_BATT_VOLT, batt_voltage_mV, &batt_msg);
     txb_enqueue(&batt_msg);
 
     // things look ok
