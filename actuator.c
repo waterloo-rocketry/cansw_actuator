@@ -27,11 +27,19 @@ void actuator_init(){
         while (1) {}; // panic, this will be caught early on in testing
     }
     
+#ifdef INJECTOR_BOARD
+    LATB4 = 1;
+    TRISB4 = 0; // set LIMIT_OPEN as output to power hall sensor
+
+    TRISB3 = 1; // set LIMIT_CLOSED (pin 24) as input
+    ANSELB3 = 1; // set as analog input
+#else
     TRISB4 = 1; // set LIMIT_OPEN (pin 25) as input
     ANSELB4 = 0; // set as digital input
 
     TRISB3 = 1; // set LIMIT_CLOSED (pin 24) as input
     ANSELB3 = 0; // set as digital input
+#endif
 }
 
 void actuator_set(enum ACTUATOR_STATE state) {
@@ -48,6 +56,17 @@ enum ACTUATOR_STATE get_actuator_state(void) {
 #if !HAS_LIMS
     return ACTUATOR_UNK;
 #else
+#ifdef INJECTOR_BOARD
+    adc_result_t hall_raw = ADCC_GetSingleConversion(channel_HALL);
+    
+//    can_msg_t debug_msg;
+//    build_analog_data_msg(millis(), SENSOR_MAG_1, hall_raw, &debug_msg);
+//    txb_enqueue(&debug_msg);
+    
+    if (hall_raw > HALL_ERR_THRESHOLD) { return ACTUATOR_ILLEGAL; }
+    if (hall_raw > HALL_THRESHOLD) { return HIGH_STATE; }
+    return 1 - HIGH_STATE;
+#else
     // read limit switch values
     bool actuator_open = PORTBbits.RB4;
     bool actuator_closed = PORTBbits.RB3;
@@ -56,6 +75,7 @@ enum ACTUATOR_STATE get_actuator_state(void) {
     if (!actuator_open && actuator_closed) { return ACTUATOR_ON; }
     if (!actuator_open && !actuator_closed) { return ACTUATOR_UNK; }
     return ACTUATOR_ILLEGAL; // both limit switches at same time
+#endif
 #endif
 }
 

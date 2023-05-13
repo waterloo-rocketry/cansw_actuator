@@ -25,7 +25,7 @@ static void send_status_ok(void);
 // Follows ACTUATOR_STATE in message_types.h
 // SHOULD ONLY BE MODIFIED IN ISR
 static enum ACTUATOR_STATE requested_actuator_state = SAFE_STATE;
-static uint32_t last_can_traffic_timestamp_ms = 0;
+static uint32_t last_can_command_timestamp_ms = 0;
 
 //memory pool for the CAN tx buffer
 uint8_t tx_pool[100];
@@ -86,7 +86,7 @@ int main(int argc, char** argv) {
             // 1. We haven't heard CAN traffic in a while
             // 2. We're low on battery voltage
             // "thread safe" because main loop should never write to requested_actuator_state
-            if ((millis() - last_can_traffic_timestamp_ms > MAX_CAN_IDLE_TIME_MS)
+            if ((millis() - last_can_command_timestamp_ms > MAX_CAN_IDLE_TIME_MS)
                     || is_batt_voltage_critical()) {
                 actuator_send_status(SAFE_STATE);
                 actuator_set(SAFE_STATE);
@@ -154,7 +154,10 @@ static void can_msg_handler(const can_msg_t *msg) {
             if (get_actuator_id(msg) == ACTUATOR_ID) {
                 // vent position will be updated synchronously
                 requested_actuator_state = get_req_actuator_state(msg);
+                // keep track of heartbeat here
+                last_can_command_timestamp_ms = millis();
             }
+
             break;
 
         case MSG_LEDS_ON:
@@ -180,9 +183,6 @@ static void can_msg_handler(const can_msg_t *msg) {
         default:
             break;
     }
-
-    // keep track of heartbeat here
-    last_can_traffic_timestamp_ms = millis();
 }
 
 // Send a CAN message with nominal status
