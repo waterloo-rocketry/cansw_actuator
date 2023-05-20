@@ -25,7 +25,7 @@ void actuator_init(){
         while (1) {}; // panic, this will be caught early on in testing
     }
     
-#ifdef INJECTOR_BOARD
+#ifdef INJECTOR
     LATB4 = 1;
     TRISB4 = 0; // set LIMIT_OPEN as output to power hall sensor
 
@@ -54,7 +54,8 @@ enum ACTUATOR_STATE get_actuator_state(void) {
 #if !HAS_LIMS
     return ACTUATOR_UNK;
 #else
-#ifdef INJECTOR_BOARD
+// define in board.h
+#ifdef INJECTOR
     adc_result_t hall_raw = ADCC_GetSingleConversion(channel_HALL);
     
 //    can_msg_t debug_msg;
