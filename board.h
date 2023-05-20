@@ -6,24 +6,39 @@
 // Contains miscellaneous board-specific code
 
 // Change this to choose which board to use
-#define INJECTOR_BOARD
+#define INJECTOR
 
-#ifdef INJECTOR_BOARD
+#ifdef INJECTOR
 #define SAFE_STATE ACTUATOR_OFF
+// We want the injector valve safe state to be "stay where you are"
+// so just disable the logic that goes to safe state
+#define SAFE_STATE_ENABLED 0
 #define ACTUATOR_ID ACTUATOR_INJECTOR_VALVE
 #define HALL_THRESHOLD 2000
 #define HALL_ERR_THRESHOLD 4090
 #define HIGH_STATE ACTUATOR_ON
+#define HAS_LIMS 1
 #endif
 
-#ifdef VENT_BOARD
+#ifdef VENT
 #define SAFE_STATE ACTUATOR_OFF
+#define SAFE_STATE_ENABLED 1
 #define ACTUATOR_ID ACTUATOR_VENT_VALVE
+#define HAS_LIMS 0
 #endif
 
-#ifdef CAMERA
+#ifdef CAMERA1
 #define SAFE_STATE ACTUATOR_OFF
-#define ACTUATOR_ID ACTUATOR_CAMERA_VALVE
+#define SAFE_STATE_ENABLED 1
+#define ACTUATOR_ID ACTUATOR_CAMERAS
+#define HAS_LIMS 0
+#endif
+
+#ifdef CAMERA2
+#define SAFE_STATE ACTUATOR_OFF
+#define SAFE_STATE_ENABLED 1
+#define ACTUATOR_ID ACTUATOR_CAMERAS
+#define HAS_LIMS 0
 #endif
 
 #ifndef SAFE_STATE

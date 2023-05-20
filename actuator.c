@@ -14,8 +14,6 @@
 #include "board.h"
 #include "timer.h"
 
-#define HAS_LIMS 1
-
 void actuator_init(){
     TRISB5 = 0; // set ACTUATOR_CONTROL (pin 26) as output
     if (SAFE_STATE == ACTUATOR_OFF) {
