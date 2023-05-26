@@ -29,7 +29,7 @@ bool check_battery_voltage_error(void){    //returns mV
 
     // get the un-scaled battery voltage (voltage divider)
     // we don't care too much about precision - some truncation is fine
-    batt_voltage_mV = batt_voltage_mV * 3.95; // scaled by value calculated via testing
+    batt_voltage_mV = batt_voltage_mV * 3.7;
 
     if (batt_voltage_mV < ACTUATOR_BATT_UNDERVOLTAGE_THRESHOLD_mV
             || batt_voltage_mV > ACTUATOR_BATT_OVERVOLTAGE_THRESHOLD_mV) {

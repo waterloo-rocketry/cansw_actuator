@@ -46,6 +46,7 @@
 #endif
 
 #define MAX_LOOP_TIME_DIFF_ms 250
+#define MAX_BUS_DEAD_TIME_ms 1000
 
 #define RED_LED_ON()    (LATC4 = 0)
 #define RED_LED_OFF()   (LATC4 = 1)
