@@ -58,10 +58,6 @@ enum ACTUATOR_STATE get_actuator_state(void) {
 #ifdef INJECTOR
     adc_result_t hall_raw = ADCC_GetSingleConversion(channel_HALL);
     
-//    can_msg_t debug_msg;
-//    build_analog_data_msg(millis(), SENSOR_MAG_1, hall_raw, &debug_msg);
-//    txb_enqueue(&debug_msg);
-    
     if (hall_raw > HALL_ERR_THRESHOLD) { return ACTUATOR_ILLEGAL; }
     if (hall_raw > HALL_THRESHOLD) { return HIGH_STATE; }
     return 1 - HIGH_STATE;
@@ -79,6 +75,15 @@ enum ACTUATOR_STATE get_actuator_state(void) {
 }
 
 void actuator_send_status(enum ACTUATOR_STATE req_state) {
+// define in board.h
+#ifdef INJECTOR
+    adc_result_t hall_raw = ADCC_GetSingleConversion(channel_HALL);
+    
+    // Send a CAN message with the raw hall value
+    can_msg_t hall_msg;
+    build_analog_data_msg(millis(), SENSOR_MAG_1, hall_raw, &hall_msg);
+    txb_enqueue(&hall_msg);
+#endif
     enum ACTUATOR_STATE curr_state = get_actuator_state();
 
     can_msg_t stat_msg;
