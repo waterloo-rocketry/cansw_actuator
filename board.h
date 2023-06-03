@@ -6,7 +6,7 @@
 // Contains miscellaneous board-specific code
 
 // Change this to choose which board to use
-#define INJECTOR
+#define VENT
 
 #ifdef INJECTOR
 #define SAFE_STATE ACTUATOR_OFF

@@ -24,9 +24,10 @@ static void send_status_ok(void);
 
 // Follows ACTUATOR_STATE in message_types.h
 // SHOULD ONLY BE MODIFIED IN ISR
-static enum ACTUATOR_STATE requested_actuator_state = SAFE_STATE;
-static uint32_t last_can_command_timestamp_ms = 0;
-uint32_t last_message_millis = 0;
+volatile enum ACTUATOR_STATE requested_actuator_state = SAFE_STATE;
+
+volatile bool seen_can_command = false;
+volatile bool seen_can_message = false;
 
 //memory pool for the CAN tx buffer
 uint8_t tx_pool[100];
@@ -66,6 +67,8 @@ int main(int argc, char** argv) {
 
     // loop timer
     uint32_t last_millis = millis();
+    uint32_t last_command_millis = millis();
+    uint32_t last_message_millis = millis();
 
     // Set up actuator
     actuator_init();
@@ -78,16 +81,25 @@ int main(int argc, char** argv) {
             OSCILLATOR_Initialize();
         }
         
-        uint32_t dt = millis() - last_message_millis;
+        if (seen_can_command) {
+            seen_can_command = false;
+            last_command_millis = millis();
+        }
+        if (seen_can_message) {
+            seen_can_message = false;
+            last_message_millis = millis();
+        }
         // prevent race condition where last_message_millis is greater than millis
         // by checking for overflow
-        if (dt > MAX_BUS_DEAD_TIME_ms && dt < (1 << 15) &&
+        uint32_t t = millis();
+        if (t - last_message_millis > MAX_BUS_DEAD_TIME_ms &&
             (SAFE_STATE_ENABLED || requested_actuator_state == SAFE_STATE)) {
             // Only reset if safe state is enabled (aka this isn't injector valve)
             // OR this is injector valve and the currently requested state is the safe
             // state (closed)
             
             // We've got too long without seeing a valid CAN message (including one of ours)
+            while (t);
             RESET();
         }
         
@@ -107,7 +119,7 @@ int main(int argc, char** argv) {
             // 2. We're low on battery voltage
             // "thread safe" because main loop should never write to requested_actuator_state
             if (SAFE_STATE_ENABLED && (
-                    (millis() - last_can_command_timestamp_ms > MAX_CAN_IDLE_TIME_MS)
+                    (millis() - last_command_millis > MAX_CAN_IDLE_TIME_MS)
                     || is_batt_voltage_critical())) {
                 actuator_send_status(SAFE_STATE);
                 actuator_set(SAFE_STATE);
@@ -150,7 +162,7 @@ static void interrupt interrupt_handler() {
 }
 
 static void can_msg_handler(const can_msg_t *msg) {
-    last_message_millis = millis();
+    seen_can_message = true;
     
     uint16_t msg_type = get_message_type(msg);
 
@@ -178,7 +190,7 @@ static void can_msg_handler(const can_msg_t *msg) {
                 // vent position will be updated synchronously
                 requested_actuator_state = get_req_actuator_state(msg);
                 // keep track of heartbeat here
-                last_can_command_timestamp_ms = millis();
+                seen_can_command = true;
             }
 
             break;
