@@ -26,8 +26,10 @@ static void send_status_ok(void);
 // SHOULD ONLY BE MODIFIED IN ISR
 volatile enum ACTUATOR_STATE requested_actuator_state = SAFE_STATE;
 
-volatile bool seen_can_command = false;
+// flags for if we have seen can messages and valid commands for different timeouts
+// bools so that the ISR only has to write a single byte and is thus atomic
 volatile bool seen_can_message = false;
+volatile bool seen_can_command = false;
 
 //memory pool for the CAN tx buffer
 uint8_t tx_pool[100];
@@ -81,25 +83,22 @@ int main(int argc, char** argv) {
             OSCILLATOR_Initialize();
         }
         
-        if (seen_can_command) {
-            seen_can_command = false;
-            last_command_millis = millis();
-        }
         if (seen_can_message) {
             seen_can_message = false;
             last_message_millis = millis();
         }
-        // prevent race condition where last_message_millis is greater than millis
-        // by checking for overflow
-        uint32_t t = millis();
-        if (t - last_message_millis > MAX_BUS_DEAD_TIME_ms &&
+        if (seen_can_command) {
+            seen_can_command = false;
+            last_command_millis = millis();
+        }
+        
+        if (millis() - last_message_millis > MAX_BUS_DEAD_TIME_ms &&
             (SAFE_STATE_ENABLED || requested_actuator_state == SAFE_STATE)) {
             // Only reset if safe state is enabled (aka this isn't injector valve)
             // OR this is injector valve and the currently requested state is the safe
             // state (closed)
             
             // We've got too long without seeing a valid CAN message (including one of ours)
-            while (t);
             RESET();
         }
         
