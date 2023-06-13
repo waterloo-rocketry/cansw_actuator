@@ -6,7 +6,7 @@
 // Contains miscellaneous board-specific code
 
 // Change this to choose which board to use
-#define VENT
+#define CAMERA1
 
 #ifdef INJECTOR
 #define SAFE_STATE ACTUATOR_OFF
@@ -18,6 +18,7 @@
 #define HALL_ERR_THRESHOLD 4090
 #define HIGH_STATE ACTUATOR_ON
 #define HAS_LIMS 1
+#define MAX_CAN_IDLE_TIME_MS 10000
 #endif
 
 #ifdef VENT
@@ -25,6 +26,7 @@
 #define SAFE_STATE_ENABLED 1
 #define ACTUATOR_ID ACTUATOR_VENT_VALVE
 #define HAS_LIMS 0
+#define MAX_CAN_IDLE_TIME_MS 10000
 #endif
 
 #ifdef CAMERA1
@@ -32,6 +34,7 @@
 #define SAFE_STATE_ENABLED 1
 #define ACTUATOR_ID ACTUATOR_CAMERAS
 #define HAS_LIMS 0
+#define MAX_CAN_IDLE_TIME_MS 900000
 #endif
 
 #ifdef CAMERA2
@@ -39,6 +42,7 @@
 #define SAFE_STATE_ENABLED 1
 #define ACTUATOR_ID ACTUATOR_CAMERAS
 #define HAS_LIMS 0
+#define MAX_CAN_IDLE_TIME_MS 900000
 #endif
 
 #ifndef SAFE_STATE
