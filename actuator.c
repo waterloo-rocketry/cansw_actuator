@@ -59,8 +59,10 @@ enum ACTUATOR_STATE get_actuator_state(void) {
     adc_result_t hall_raw = ADCC_GetSingleConversion(channel_HALL);
     
     if (hall_raw > HALL_ERR_THRESHOLD) { return ACTUATOR_ILLEGAL; }
+    // HIGH_STATE is defined in board.h as the ACTUATOR_STATE that a high
+    // hall sensor reading maps to.
     if (hall_raw > HALL_THRESHOLD) { return HIGH_STATE; }
-    return 1 - HIGH_STATE;
+    return 1 - HIGH_STATE; // First two ACTUATOR_STATEs are on and off so this works to invert
 #else
     // read limit switch values
     bool actuator_open = PORTBbits.RB4;
